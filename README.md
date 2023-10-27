@@ -18,7 +18,7 @@
 *  In **all next .yaml files** in this section: check the paths before executing and substitute with your paths if necessary
 * Create the persistent volume and its claim: "kubectl apply -f your-path/pv.yaml", "kubectl apply -f your-path/pvc.yaml"
   * Check is the claim is in "BOUND" status: kubectl get pvc
-* Create the debugger pod that allows us to change properties of future workflows directly (workaround): "kubectl apply -f ~/workspace/tarema-k8-scheduler/testpod.yaml"
+* Create the debugger pod that allows us to change properties of future workflows directly (workaround): "kubectl apply -f your-path/testpod.yaml"
   * Check if the pod is running kubectl get pods and look for the ubuntu-sleep-pod
   * Enter the inside of the pod with "kubectl exec -it ubuntu-sleep-pod -- /bin/bash"
   * There should be a folder called "data"
