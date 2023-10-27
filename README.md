@@ -56,3 +56,13 @@ We are still not using our custom scheduler!
 
     then rerun the nextflow call.
     To Be Done: Fix problems with the custom scheduler. When the correct scheduler is chosen, the custom scheduler will print messages on the console.
+
+    UPD: another idea is to add this to line 155 in nextflow.config, da wo `profiles` anfängt:
+```
+  newprof {
+        includeConfig 'conf/test.config'
+        k8s.scheduler.strategy = "new-scheduler"
+    }
+
+```
+und es dann mit -remoteProfile newprof zu rufen. aber der neue Scheduler wird immer noch nicht aufgerufen
