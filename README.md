@@ -10,6 +10,7 @@
   * Without an IDE, type "mvn clean", then "mvn install"
   * Check that the procecess finishes without errors
 * Run: in IntelliJ, open "src/java/controller", right-click on "Main" and choose "Run".
+* The setup is correctly completed if you see additional outputs in the console.
 ### Kubernetes
 *  In this and next sections, substitute your-path with the location of this folder on your computer
 *  Start the cluster
