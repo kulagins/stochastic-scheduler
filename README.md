@@ -6,6 +6,9 @@
 * Build it with maven:
   * In IntelliJ
     * open the maven tab (the "m" symbol on the right from the code)
+  ![image](https://github.com/kulagins/stochastic-scheduler/assets/75316111/5837c4ca-b7ca-4544-8353-87b8386bc743)
+ 
+  
     * Under "Lifecycle", double-click "clean", then "install"
   * Without an IDE, type "mvn clean", then "mvn install"
   * Check that the procecess finishes without errors
