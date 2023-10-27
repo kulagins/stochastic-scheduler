@@ -69,3 +69,5 @@ We are still not using our custom scheduler!
 
 ```
 und es dann mit -remoteProfile newprof zu rufen. aber der neue Scheduler wird immer noch nicht aufgerufen
+
+Another idea: there might be something wrong with new-scheduler.yaml. Maybe something needs to be substitutes around lines 55-60
