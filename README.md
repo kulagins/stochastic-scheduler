@@ -38,8 +38,9 @@ We are still not using our custom scheduler!
 
  ### Running everything together: TBD
  We need to force nextflow to use the custom scheduler instead of the default kubernetes scheduler.
- This should theoretically be possible in the nextflow call (nextflow smth smth -scheduler-namen )
- * Go inside the debugger pod: "kubectl exec -it ubuntu-sleep-pod -- /bin/bash"
+ This should theoretically be possible in the nextflow call (nextflow smth smth -scheduler-name new-scheduler ), but TBD if this is possible and how.
+ * Alternative: change nextflow config of the workflows that we will run.
+ * For that, go inside the debugger pod: "kubectl exec -it ubuntu-sleep-pod -- /bin/bash"
   * Change to /data/projects/nf-core/sarek
   * Try "nano nextflow.config" (or vim if your prefer it)
    * If no nano is available, do "apt-get update & apt-get install nano"
