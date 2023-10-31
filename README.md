@@ -28,7 +28,7 @@
 *  Create clusterrole: "kubectl apply -f your-path/clusterrole.yaml"
 ### Nextflow
 * If you have any errors in this part, try out another workflow from these: rnaseq, sarek TBD more
-* Start the workflow with " nextflow kuberun nf-core/sarek -v myclaim:/data --outdir ./ -remoteProfile test"
+* Start the workflow with  `nextflow kuberun nf-core/sarek -v myclaim:/data --outdir ./ -remoteProfile test`
  *  In the best case, it should run for a while and end with something like:
    ```
 [12/7ca26a] Submitted process > NFCORE_SAREK:SAREK:VCF_QC_BCFTOOLS_VCFTOOLS:VCFTOOLS_TSTV_COUNT (test)
@@ -38,16 +38,27 @@
 
  ```
 We are still not using our custom scheduler!
-
- ### Running everything together: TBD
+ ### Running everything together: workaround
+ If during `nextflow kuberun nf-core/sarek -v myclaim:/data --outdir ./ -remoteProfile test`, the Tarema code does not write outputs, then the scheduler name has not been passed properly.
+ To work around this issue:
+  * In CurrentPodNodeStatus.java, comment out line 58.
+  * Put a debug break point in eventReceived (line 62)
+  * Restart the nextflow workflow and await when the program goes to this breakpoint
+    
+ ### Running everything together correctly: TBD
  We need to force nextflow to use the custom scheduler instead of the default kubernetes scheduler.
  This should theoretically be possible in the nextflow call (nextflow smth smth -scheduler-name new-scheduler ), but TBD if this is possible and how.
  * Alternative: change nextflow config of the workflows that we will run.
  * For that, go inside the debugger pod: "kubectl exec -it ubuntu-sleep-pod -- /bin/bash"
   * Change to /data/projects/nf-core/sarek
   * Try "nano nextflow.config" (or vim if your prefer it)
-   * If no nano is available, do "apt-get update & apt-get install nano"
-  * At the  end of nextflow.config, add this code:
+   * If no nano is available, do "apt-get update & apt-get install nano", then rerun the nextflow call.
+    To Be Done: Fix problems with the custom scheduler. When the correct scheduler is chosen, the custom scheduler will print messages on the console.
+
+
+The following is a collection of ideas how to define the scheduler name in the kubernetes call.
+
+* Change to /data/projects/nf-core/sarek. At the  end of nextflow.config, add this code:
     ```
     k8s{
         scheduler{
@@ -56,9 +67,15 @@ We are still not using our custom scheduler!
 
     }
     ```
-
-    then rerun the nextflow call.
-    To Be Done: Fix problems with the custom scheduler. When the correct scheduler is chosen, the custom scheduler will print messages on the console.
+ * Change to /data/projects/nf-core/sarek/conf 
+ * open test.config with nano (this defines how the profile test is being executed) and add this at the end:
+  ```
+k8s {
+   scheduler {
+      name = 'new-scheduler'
+   }  
+}
+   ```
 
     UPD: another idea is to add this to line 155 in nextflow.config, da wo `profiles` anfängt:
 ```
