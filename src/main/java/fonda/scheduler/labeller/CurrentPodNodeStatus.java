@@ -1,7 +1,8 @@
 package fonda.scheduler.labeller;
 
+import fonda.scheduler.distributedscheduler.SDLSScheduler;
 import fonda.scheduler.distributedscheduler.SJFNScheduler;
-import fonda.scheduler.model.PodListWithIndex;
+import fonda.scheduler.model.*;
 import io.fabric8.kubernetes.api.model.ListOptions;
 import io.fabric8.kubernetes.api.model.Node;
 import io.fabric8.kubernetes.api.model.NodeList;
@@ -16,11 +17,34 @@ import io.fabric8.kubernetes.client.informers.ResourceEventHandler;
 import io.fabric8.kubernetes.client.informers.SharedInformerEventListener;
 import io.fabric8.kubernetes.client.informers.impl.DefaultSharedIndexInformer;
 import org.javatuples.Pair;
+
+import org.jgrapht.nio.dot.DOTImporter;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
+
+
+//package org.jgrapht.nio.dot;
+
+import org.jgrapht.*;
+import org.jgrapht.graph.*;
+import org.jgrapht.nio.*;
+import org.jgrapht.util.*;
+//import org.junit.jupiter.api.*;
+
+import java.io.*;
+import java.util.*;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
+//import static org.junit.jupiter.api.Assertions.assertEquals;
+//import static org.junit.jupiter.api.Assertions.fail;
 
 public class CurrentPodNodeStatus {
 
@@ -28,14 +52,26 @@ public class CurrentPodNodeStatus {
 
     private OperationContext operationContext;
 
+    private List<List<Object>> listofLists;
+
+    private List<DataRow> rawdata;
+
+    private List<MyProcessor> cluster;
+
     private ConcurrentLinkedQueue<SharedInformerEventListener> workerQueueNode;
 
     DefaultSharedIndexInformer<Node, NodeList> defaultSharedIndexInformerNode;
 
     private static final Logger logger = LoggerFactory.getLogger(CurrentPodNodeStatus.class);
 
-    public CurrentPodNodeStatus(KubernetesClient client) {
+    public CurrentPodNodeStatus(KubernetesClient client, List<List<Object>> listofLists, List<DataRow> rawdata, List<MyProcessor> cluster) {
         this.client = client;
+
+        this.listofLists = listofLists;
+
+        this.rawdata = rawdata;
+
+        this.cluster = cluster;
 
         SJFNScheduler.podList = new PodListWithIndex();
 
@@ -55,38 +91,135 @@ public class CurrentPodNodeStatus {
         // setUpIndexInformerPod();
 
         ListOptions options = new ListOptions();
-        options.setFieldSelector("spec.schedulerName=new-scheduler");
+        //options.setFieldSelector("spec.schedulerName=new-scheduler");
 
+        /*
+        DirectedAcyclicGraph<MyVertex, MyEdge> result2 = new DirectedAcyclicGraph<>(
+                SupplierUtil.createSupplier(MyVertex.class),
+                SupplierUtil.createSupplier(MyEdge.class),
+                false
+        );
+
+        DOTImporter<MyVertex, MyEdge> importer2 = new DOTImporter<>();
+        importer2.addVertexAttributeConsumer((p,a)->{
+            String name = p.getSecond();
+            MyVertex myvertex = p.getFirst();
+            //System.out.println("p ist :" + p);
+            //System.out.println("a ist :" + a);
+            Attribute attrs = a;
+            int zaehler;
+            if (name.equals("label")) {
+                String label = attrs.getValue();
+                myvertex.setLabel(attrs.getValue());
+                for (zaehler = 0; zaehler < listofLists.size(); zaehler++) {
+                    List<Object> worklist = new ArrayList<Object>();
+                    worklist = listofLists.get(zaehler);
+                    String taskname = (String) worklist.get(2);
+                    if (taskname.equals(label)) { //add workflowname
+                        float exp = (float) worklist.get(5);
+                        float var = (float) worklist.get(6);
+                        myvertex.setExpected(exp);
+                        myvertex.setVariance(var);
+                        myvertex.setPushed(false);
+                    }
+                    if (label.equals("Start") || label.equals("End")) {
+                        myvertex.setExpected(0);
+                        myvertex.setVariance(0);
+                        myvertex.setPushed(false);
+                    }
+                }
+            }
+
+        });
+        try{
+            importer2.importGraph(result2, new FileReader("src/main/resources/methylseq_sparse.dot"));
+        }catch (Exception e){
+            System.out.println("Error could not import the File. Error 404i.");
+        }*/
+
+        //System.out.print("stop before watcher");
+        //System.out.println("Failed here if printed.");
+        //result2.getEdgeSource().getLabel();
+        List<Pair<String, List<Pair<MyVertex,MyProcessor>>>> schedulelist = new ArrayList<>();
         client.pods().watch(options, new Watcher<Pod>() {
             @Override
             public void eventReceived(Action action, Pod pod) {
 
+            //System.out.println("hello");
 
                 switch (action) {
                     case ADDED:
                         logger.info("[" + pod.getSpec().getContainers().get(0).getName() + "] - " + "New Pod added to Scheduler: " + pod.getMetadata().getName());
-
-                        pod.getSpec().getAffinity().getNodeAffinity().getPreferredDuringSchedulingIgnoredDuringExecution().forEach(preferredSchedulingTerm -> {
-                            if (preferredSchedulingTerm.getPreference().getMatchExpressions().get(0).getKey().equalsIgnoreCase("RAM") || preferredSchedulingTerm.getPreference().getMatchExpressions().get(0).getKey().equalsIgnoreCase("CPU_ST")) {
-                                    System.out.println("Key: " + preferredSchedulingTerm.getPreference().getMatchExpressions().get(0).getKey() + ": " + Integer.valueOf(preferredSchedulingTerm.getPreference().getMatchExpressions().get(0).getValues().get(0)));
-                            }
-                        });
-
-                        SJFNScheduler.podList.addPodToList(pod);
-
-                        if (SJFNScheduler.unscheduledPods.getItems().size() > 0) {
-                            SJFNScheduler.unscheduledPods.getItems().add(pod);
-                            break;
+                        //System.out.println(pod);
+                        String name2 ="";
+                        try {
+                            name2 = pod.getMetadata().getLabels().get("nextflow.io/processName");
+                        }catch(Exception e){
+                            System.out.println("Error 606: No processname found.");
                         }
-
-                        if (pod.getSpec().getNodeName() == null) {
-                            Pair<Pod, Node> scheduledPair = SJFNScheduler.scheduleSJFN(pod).orElse(new Pair<>(pod, null)); // change scheduling approach here
-                            if (scheduledPair.getValue1() == null) {
-                                pod.getSpec().setNodeName(null);
-                            } else {
-                                pod.getSpec().setNodeName(scheduledPair.getValue1().getMetadata().getName());
+                        String [] names = name2.split("_");
+                        String workflowname = names[2];
+                        //Check if schedule available
+                        for (int j = 0; j < schedulelist.size(); j++){
+                            Pair<String, List<Pair<MyVertex,MyProcessor>>> currpair = schedulelist.get(j);
+                            if (currpair.getValue0().equals(workflowname)){
+                                System.out.println("Schedule already existed.");
+                                break;
                             }
-                            SJFNScheduler.podList.addPodToList(pod);
+                            if (j == (schedulelist.size()-1)){
+                                //import dot-file based on workflow from names
+                                DirectedAcyclicGraph<MyVertex, MyEdge> result = new DirectedAcyclicGraph<>(
+                                        SupplierUtil.createSupplier(MyVertex.class),
+                                        SupplierUtil.createSupplier(MyEdge.class),
+                                        false
+                                );
+
+                                DOTImporter<MyVertex, MyEdge> importer = new DOTImporter<>();
+                                importer.addVertexAttributeConsumer((p,a)->{    //adds attributes to graph
+                                    String name = p.getSecond();
+                                    MyVertex myvertex = p.getFirst();
+                                    //System.out.println("p ist :" + p);
+                                    //System.out.println("a ist :" + a);
+                                    Attribute attrs = a;
+                                    int zaehler;
+                                    if (name.equals("label")) {
+                                        String label = attrs.getValue();
+                                        myvertex.setLabel(attrs.getValue());
+                                        for (zaehler = 0; zaehler < listofLists.size(); zaehler++) {
+                                            List<Object> worklist = new ArrayList<Object>();
+                                            worklist = listofLists.get(zaehler);
+                                            String taskname = (String) worklist.get(2);
+                                            if (taskname.equals(label)) { //add workflowname
+                                                float exp = (float) worklist.get(5);
+                                                float var = (float) worklist.get(6);
+                                                myvertex.setExpected(exp);
+                                                myvertex.setVariance(var);
+                                                myvertex.setPushed(false);
+                                            }
+                                            if (label.equals("Start") || label.equals("End")) {
+                                                myvertex.setExpected(0);
+                                                myvertex.setVariance(0);
+                                                myvertex.setPushed(false);
+                                            }
+                                        }
+                                    }
+
+                                });
+
+                                try{
+                                    //importer.importGraph(result, new FileReader("src/main/resources/methylseq_sparse.dot"));
+
+                                    importer.importGraph(result, new FileReader("src/main/resources/"+workflowname+"_sparse.dot"));
+                                }catch(Exception e){
+                                    System.out.println("Error while reading dot-File.");
+                                }
+                                //SDLSScheduler result = new SDLSScheduler()
+                                SDLSScheduler.sblevel_calc(cluster, rawdata, result, workflowname);
+                                Pair<Float, List<Pair<MyVertex,MyProcessor>>> results = SDLSScheduler.sdls_schedule(cluster, result);
+                                //System.out.println(name2);
+                                schedulelist.add(new Pair<>(workflowname, results.getValue1()));
+                                break;
+                            }
                         }
                         break;
                     case MODIFIED:
@@ -131,7 +264,11 @@ public class CurrentPodNodeStatus {
 
             @Override
             public Object list(ListOptions params, String namespace, OperationContext context) {
-                SJFNScheduler.nodeList = client.nodes().list();
+                if (client.nodes()==null){
+                   return List.of();
+                }
+                try{SJFNScheduler.nodeList = client.nodes().list();}
+                catch(Exception e){return List.of();}
                 Collections.shuffle(SJFNScheduler.nodeList.getItems()); // use this for scheduling experiments
                 return SJFNScheduler.nodeList;
             }
