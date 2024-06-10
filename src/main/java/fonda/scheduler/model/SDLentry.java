@@ -31,16 +31,16 @@ public class SDLentry {
         return processor;
     }
 
-    public void setSdlexp(float sdlexp) {
-        this.sdlexp = sdlexp;
-    }
+    //public void setSdlexp(float sdlexp) {
+    //    this.sdlexp = sdlexp;
+    //}
     public float getSdlexp(){
         return this.sdlexp;
     }
 
-    public void setSdlvar(float sdlvar){
-        this.sdlvar = sdlvar;
-    }
+    //public void setSdlvar(float sdlvar){
+    //    this.sdlvar = sdlvar;
+    //}
     public float getSdlvar(){
         return this.sdlvar;
     }

@@ -23,16 +23,16 @@ public class MyProcessor {
         this.ftvar = 0;
     }
 
-    public void setProcname(String name){
-        this.procname = name;
-    }
+    //public void setProcname(String name){
+    //    this.procname = name;
+    //}
     public String getProcname(){
         return procname;
     }
 
-    public void setProcspeed(float speed){
-        this.procspeed = speed;
-    }
+    //public void setProcspeed(float speed){
+    //    this.procspeed = speed;
+    //}
     public float getProcspeed(){
         return procspeed;
     }

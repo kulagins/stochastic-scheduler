@@ -1,9 +1,8 @@
 package fonda.scheduler.model;
 
-import java.util.*;
+//import java.util.*;
 
 public class MyVertex {
-        public static String id;
         public String label;
         public float expected;
         public float variance;
@@ -18,9 +17,6 @@ public class MyVertex {
 
         public float completiontimevar;
 
-        private MyVertex(){
-            //import
-        }
         public MyVertex(String label){
             this.label = label;
         }

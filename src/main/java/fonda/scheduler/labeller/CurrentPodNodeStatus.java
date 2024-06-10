@@ -52,11 +52,11 @@ public class CurrentPodNodeStatus {
 
     private OperationContext operationContext;
 
-    private List<List<Object>> listofLists;
+    private final List<List<Object>> listofLists;
 
-    private List<DataRow> rawdata;
+    private final List<DataRow> rawdata;
 
-    private List<MyProcessor> cluster;
+    private final List<MyProcessor> cluster;
 
     private ConcurrentLinkedQueue<SharedInformerEventListener> workerQueueNode;
 
@@ -186,7 +186,7 @@ public class CurrentPodNodeStatus {
                                         String label = attrs.getValue();
                                         myvertex.setLabel(attrs.getValue());
                                         for (zaehler = 0; zaehler < listofLists.size(); zaehler++) {
-                                            List<Object> worklist = new ArrayList<Object>();
+                                            List<Object> worklist = new ArrayList<>();
                                             worklist = listofLists.get(zaehler);
                                             String taskname = (String) worklist.get(2);
                                             if (taskname.equals(label)) { //add workflowname

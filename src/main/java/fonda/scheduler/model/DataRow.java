@@ -1,17 +1,17 @@
 package fonda.scheduler.model;
 
 public class DataRow {
-    private String machine;
+    private final String machine;
 
-    private String workflow;
+    private final String workflow;
 
-    private String task;
+    private final String task;
 
-    private float realtime;
+    private final float realtime;
 
-    private float taskinputsize;
+    private final float taskinputsize;
 
-    private float wchar;
+    private final float wchar;
 
     public DataRow(String machine, String workflow, String task, float realtime, float taskinputsize, float wchar){
 

@@ -5,7 +5,7 @@ import fonda.scheduler.model.MyEdge;
 import fonda.scheduler.model.MyProcessor;
 import fonda.scheduler.model.MyVertex;
 import org.javatuples.Pair;
-import org.jgrapht.graph.DefaultEdge;
+//import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.DirectedAcyclicGraph;
 import org.jgrapht.util.SupplierUtil;
 import org.junit.jupiter.api.Test;
@@ -20,7 +20,7 @@ class SDLSSchedulerTest {
 
     @Test
     void sblevelcalcTestroot() {
-        float runs = 1;
+        //float runs = 1;
         float exp = 1;
         float var = 1;
         float cpuspeed = 1;
@@ -55,7 +55,7 @@ class SDLSSchedulerTest {
 
     @Test
     void sblevelcalcTestoneedge() {
-        float runs = 1;
+        //float runs = 1;
         float exp = 1;
         float var = 1;
         float cpuspeed = 1;
@@ -110,7 +110,7 @@ class SDLSSchedulerTest {
 
     @Test
     void sblevelcalcTesttwodepth() {
-        float runs = 1;
+        //float runs = 1;
         float cpuspeed = 1;
         DirectedAcyclicGraph<MyVertex, MyEdge> testgraph3 = new DirectedAcyclicGraph<>(
                 SupplierUtil.createSupplier(MyVertex.class),
@@ -187,7 +187,7 @@ class SDLSSchedulerTest {
 
     @Test
     void sblevelcalcTesttwodepthnull() {
-        float runs = 1;
+        //float runs = 1;
         float cpuspeed = 1;
         DirectedAcyclicGraph<MyVertex, MyEdge> testgraph3 = new DirectedAcyclicGraph<>(
                 SupplierUtil.createSupplier(MyVertex.class),
@@ -248,7 +248,7 @@ class SDLSSchedulerTest {
 
     @Test
     void sblevelcalcTestedgevalues(){
-        float runs = 1;
+        //float runs = 1;
         float exp = 1;
         float var = 1;
         float cpuspeed = 1;
@@ -299,7 +299,7 @@ class SDLSSchedulerTest {
 
     @Test
     void sblevelcalcTestedgevalues2(){
-        float runs = 1;
+        //float runs = 1;
         float exp = 1;
         float var = 1;
         float cpuspeed = 1;
@@ -429,7 +429,7 @@ class SDLSSchedulerTest {
 
         testgraphsdls2.addEdge(rootvertex,task1vertex);
         Pair<Float, List<Pair<MyVertex,MyProcessor>>> results = SDLSScheduler.sdls_schedule(currcluster2,testgraphsdls2);
-        float makespan = results.getValue0();
+        //float makespan = results.getValue0();
         //assertEquals(0.2f,makespan, "Makespan is either 1/5 or wrong.!"); // is 0.182 instead of 0.2 (maxValues)
         List<Pair<MyVertex,MyProcessor>> schedule = results.getValue1();
         Pair<MyVertex,MyProcessor> taskpair1 = new Pair<>(rootvertex,proc1);

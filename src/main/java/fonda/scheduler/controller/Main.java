@@ -7,8 +7,8 @@ import io.fabric8.kubernetes.client.DefaultKubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import org.javatuples.Pair;
 
-import javax.swing.*;
-import javax.xml.crypto.Data;
+//import javax.swing.*;
+//import javax.xml.crypto.Data;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -114,7 +114,7 @@ public class Main {
                 }
                 //Cpumatching based on clusterlist
                 for (MyProcessor workproc : cluster) {
-                    if (machine.toLowerCase().equals(workproc.getProcname().toLowerCase())) {
+                    if (machine.equalsIgnoreCase(workproc.getProcname())) {
                         cpuspeed = workproc.getProcspeed();
                         break;
                     }
@@ -150,7 +150,7 @@ public class Main {
 
                 rawdata.add(row);
 
-                List<Object> innerList = new ArrayList<Object>();
+                List<Object> innerList = new ArrayList<>();
                 innerList.add(machine);//0
                 innerList.add(workflow);//1
                 innerList.add(task);//2
@@ -160,7 +160,7 @@ public class Main {
                 innerList.add(variance);//6
                 innerList.add(cpuspeed);//7
 
-                List<Object> workList = new ArrayList<Object>();
+                List<Object> workList = new ArrayList<>();
 
                 //Add first entry when list is empty
                 if(listofLists.isEmpty()){
@@ -200,7 +200,7 @@ public class Main {
             System.out.println("IOException error in Data.csv read.");
         }
 
-        List<Object> workList = new ArrayList<Object>();
+        List<Object> workList = new ArrayList<>();
         //Expected(5) & Variance(6) for all entries:
         for(int j = 0; j < listofLists.size(); j++){
             workList = listofLists.get(j);
@@ -259,7 +259,7 @@ public class Main {
         if (run_sum == 0){
             return 0;
         }
-        for(int k = 0; k < rawdata.size(); k++) {
+        for (DataRow currrow : rawdata) {
             if (help2 == run_sum) {
                 help = 0;
                 help2 = 0;
@@ -269,11 +269,11 @@ public class Main {
             String workflow = (String) workList.get(1);
             String task = (String) workList.get(2);
 
-            if (machine.equals(rawdata.get(k).getMachine())
-                && task.equals(rawdata.get(k).getTask())
-                && workflow.equals(rawdata.get(k).getWorkflow())
+            if (machine.equals(currrow.getMachine())
+                    && task.equals(currrow.getTask())
+                    && workflow.equals(currrow.getWorkflow())
             ) {
-                help = rawdata.get(k).getRealtime() - expected;
+                help = currrow.getRealtime() - expected;
                 sum_v = sum_v + (help * help);
                 help2 = help2 + 1;
             }

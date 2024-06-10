@@ -5,10 +5,10 @@ import java.util.*;
 
 import fonda.scheduler.model.*;
 
-import org.apache.commons.math3.analysis.ParametricUnivariateFunction;
-import org.apache.commons.math3.analysis.UnivariateFunction;
-import org.apache.commons.math3.analysis.integration.*;
-import org.apache.commons.math3.util.Precision;
+//import org.apache.commons.math3.analysis.ParametricUnivariateFunction;
+//import org.apache.commons.math3.analysis.UnivariateFunction;
+//import org.apache.commons.math3.analysis.integration.*;
+//import org.apache.commons.math3.util.Precision;
 import org.javatuples.Pair;
 import org.jgrapht.graph.*;
 import org.apache.commons.math3.*;
@@ -60,8 +60,8 @@ public class SDLSScheduler {
         List<MyVertex> revtoplist = constructRevToplist(root,graph,tasklist);
 
         //Calc Sb-Level
-        float sb_levelexp = 0;
-        float sb_levelvar = 0;
+        float sb_levelexp;
+        float sb_levelvar;
         //Calc w(p)
         float w_p = calcWp(cluster); //vorher calcwp(listoflists)
 
@@ -234,14 +234,14 @@ public class SDLSScheduler {
                 + ( (exp1 + exp2)*epsilon*psi) //thus nphi should be positiv or negativ presign of 2nd term needed !!!
                 - (Math.pow(resultExp,2.0)) );
         //System.out.println("phi:"+phi);
-        float term1 = (float) ((Math.pow(exp1,2)+var1) *phi);
+        //float term1 = (float) ((Math.pow(exp1,2)+var1) *phi);
         //System.out.println("first term:"+ term1);
 
-        float term2 = (float) ((Math.pow(exp2,2)+var2) *nphi);
+        //float term2 = (float) ((Math.pow(exp2,2)+var2) *nphi);
         //System.out.println("nphi:"+nphi);
         //System.out.println("second term:"+ term2);
 
-        float term3 = (float) ((exp1+exp2)*epsilon*psi);
+        //float term3 = (float) ((exp1+exp2)*epsilon*psi);
         //System.out.println("third term:"+ term3);
         //System.out.println("resultvar:"+ resultVar);
         //System.out.println("4th term: "+ Math.pow(resultExp,2));
@@ -324,7 +324,7 @@ public class SDLSScheduler {
             //List<List<Object>> listofLists,
             DirectedAcyclicGraph<MyVertex,MyEdge> graph
             ){
-        MyVertex v_entry = null;
+
         Set<MyVertex> tasklist = graph.vertexSet();
         List<MyVertex> taskpool = new ArrayList<>();
 
@@ -333,7 +333,7 @@ public class SDLSScheduler {
 
         float w_p = calcWp(cluster); //listoflists vorher
         List<Pair<MyVertex, MyProcessor>> schedule = new ArrayList<>(); // war String, Float wieso ? siehe blätter?
-        int i = 0;
+        //int i = 0;
         while(!taskpool.isEmpty()){
             //MyVertex
             List<SDLentry> listSDL = new ArrayList<>();
@@ -364,7 +364,7 @@ public class SDLSScheduler {
             //push unconstrained childs into readypool
             pushChilds(taskpool, pushedtask, graph);
             //System.out.println("taskpool:"+ taskpool);
-            i++;
+            //i++;
             //update earliest execution start time
             //updateST Funktion schreiben beachten Formeln 1-4 im Paper!!! ?!?!
             //split into FT update and calcST in calcSDL from FT of the processor and the DRT of Task-proc-pair
@@ -409,8 +409,7 @@ public class SDLSScheduler {
     }
 
     public static float calcVaryCompcap(float v_i, float w_p, MyProcessor processor){
-        float varcompcap = (v_i/w_p) - (v_i/ processor.getProcspeed());
-        return varcompcap;
+        return (v_i/w_p) - (v_i/ processor.getProcspeed());
     }
 
     public static Pair<MyVertex, MyProcessor> stochasticGreatest(List<SDLentry> listSDL){
@@ -436,8 +435,6 @@ public class SDLSScheduler {
                 greatestx = x;
                 greatestname = currentry.getTaskname();
                 greatestproc = currentry.getProcname();
-            }else {
-                continue;
             }
         }
         return new Pair<>(greatestname,greatestproc);
@@ -481,8 +478,8 @@ public class SDLSScheduler {
                                            DirectedAcyclicGraph<MyVertex,MyEdge> graph,
                                            List<Pair<MyVertex, MyProcessor>> schedule,
                                            MyProcessor currproc){
-        float drtexp = 0;
-        float drtvar = 0;
+        float drtexp;
+        float drtvar;
         float ctexp = 0;
         float ctvar = 0;
         MyVertex biggestct = null;
