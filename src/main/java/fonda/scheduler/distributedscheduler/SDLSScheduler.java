@@ -186,6 +186,7 @@ public class SDLSScheduler {
                             current_vx.setSb_levelexp(sblevelexp);
                             current_vx.setSb_levelvar(sblevelvar);
                         }else {
+                            current_vx.setSb_levelexp(sblevelexp);
                             current_vx.setSb_levelvar(sblevelvar);
                             System.out.println("MaxValues-Wrong values mistake. Take Note!");
                         }
