@@ -512,6 +512,8 @@ public class SDLSScheduler {
         for (MyEdge edgeancestor : inedges){
             MyVertex ancestor = graph.getEdgeSource(edgeancestor);
             Pair<Float,Float> ctvalues = maxValues(ctexp,ancestor.getCTtimeexp(),ctvar, ancestor.getCTtimevar());
+            ctexp = ctvalues.getValue0();
+            ctvar = ctvalues.getValue1();
             if (ctvalues.getValue0() == ancestor.getCTtimeexp() && ctvalues.getValue1() == ancestor.getCTtimevar()){
                 biggestct = ancestor;
             }
