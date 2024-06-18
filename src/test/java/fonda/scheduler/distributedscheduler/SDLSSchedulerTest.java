@@ -429,7 +429,8 @@ class SDLSSchedulerTest {
 
         testgraphsdls2.addEdge(rootvertex,task1vertex);
         Pair<Float, List<Pair<MyVertex,MyProcessor>>> results = SDLSScheduler.sdls_schedule(currcluster2,testgraphsdls2);
-        //float makespan = results.getValue0();
+        float makespan = results.getValue0();
+        System.out.println("makespan: "+ makespan);
         //assertEquals(0.2f,makespan, "Makespan is either 1/5 or wrong.!"); // is 0.182 instead of 0.2 (maxValues)
         List<Pair<MyVertex,MyProcessor>> schedule = results.getValue1();
         Pair<MyVertex,MyProcessor> taskpair1 = new Pair<>(rootvertex,proc1);

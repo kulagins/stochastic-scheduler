@@ -171,7 +171,9 @@ public class SDLSScheduler {
                     current_vx.setSb_levelvar(sblevelvar);
                 }else{
                     Pair<Float,Float> maxresult = maxValues(current_vx.getSb_levelexp(),sblevelexp,current_vx.getSb_levelvar(),sblevelvar);
-                    float diffexp1 = Math.abs(sblevelexp - maxresult.getValue0());
+                    current_vx.setSb_levelexp(maxresult.getValue0());
+                    current_vx.setSb_levelvar(maxresult.getValue1());
+                    /*float diffexp1 = Math.abs(sblevelexp - maxresult.getValue0());
                     float diffexp2 = Math.abs(current_vx.getSb_levelexp() - maxresult.getValue0());
                     float diffvar1 = Math.abs(sblevelvar - maxresult.getValue1());
                     float diffvar2 = Math.abs(current_vx.getSb_levelvar() - maxresult.getValue1());
@@ -192,7 +194,7 @@ public class SDLSScheduler {
                         }
                     }else{
                         System.out.println("Nothing changes!");
-                    }
+                    }*/
                     /*
                     if (diffexp1 < diffexp2 && diffvar2 < diffvar1 || diffexp1 > diffexp2 && diffvar1 < diffvar2){
                         System.out.println("Error in maxValue comparison. Mixed results. Error 406.");
@@ -246,7 +248,27 @@ public class SDLSScheduler {
         //System.out.println("third term:"+ term3);
         //System.out.println("resultvar:"+ resultVar);
         //System.out.println("4th term: "+ Math.pow(resultExp,2));
-        return new Pair<>(resultExp, resultVar);
+        float diffexp1 = Math.abs(exp1 - resultExp);
+        float diffexp2 = Math.abs(exp2 - resultExp);
+        float diffvar1 = Math.abs(var1 - resultVar);
+        float diffvar2 = Math.abs(var2 - resultVar);
+
+        if (diffexp1 <= diffexp2){
+            if(diffvar1 <= diffvar2){
+                return new Pair<>(exp1, var1);
+            }else {
+                System.out.println("MaxValues-Wrong values mistake. Take Note!");
+                return new Pair<>(exp1,var1);
+            }
+        }else{
+            if(diffvar2 <= diffvar1){
+                return new Pair<>(exp2, var2);
+            }else {
+                System.out.println("MaxValues-Wrong values mistake. Take Note!");
+                return new Pair<>(exp2,var2);
+            }
+        }
+        //return new Pair<>(resultExp, resultVar);
     }
 
     private static MyVertex findRoot(Set<MyVertex> vertexList, DirectedAcyclicGraph<MyVertex,MyEdge> graph){
@@ -490,7 +512,10 @@ public class SDLSScheduler {
         for (MyEdge edgeancestor : inedges){
             MyVertex ancestor = graph.getEdgeSource(edgeancestor);
             Pair<Float,Float> ctvalues = maxValues(ctexp,ancestor.getCTtimeexp(),ctvar, ancestor.getCTtimevar());
-            float diffexp1 = Math.abs(ctexp - ctvalues.getValue0());
+            if (ctvalues.getValue0() == ancestor.getCTtimeexp() && ctvalues.getValue1() == ancestor.getCTtimevar()){
+                biggestct = ancestor;
+            }
+            /*float diffexp1 = Math.abs(ctexp - ctvalues.getValue0());
             float diffexp2 = Math.abs(ancestor.getCTtimeexp() - ctvalues.getValue0());
             float diffvar1 = Math.abs(ctvar - ctvalues.getValue1());
             float diffvar2 = Math.abs(ancestor.getCTtimevar() - ctvalues.getValue1());
@@ -507,7 +532,7 @@ public class SDLSScheduler {
                 }
             }else {
                 System.out.println("Diffexp failed!");
-            }
+            }*/
         }
         //check if on same proc: if yes: drt = 0 ,no: drt = cttime + edge
         MyProcessor ancestorproc = new MyProcessor("emptyname", 0);
