@@ -132,9 +132,9 @@ public class CurrentPodNodeStatus {
 
         });
         try{
-            importer2.importGraph(result2, new FileReader("src/main/resources/methylseq_sparse.dot"));
+            importer2.importGraph(result2, new FileReader("src/main/resources/bacass_sparse.dot"));
         }catch (Exception e){
-            System.out.println("Error could not import the File. Error 404i.");
+            System.out.println("Error could not import the File. Error 404i." + e);
         }*/
 
         //System.out.print("stop before watcher");
@@ -150,23 +150,29 @@ public class CurrentPodNodeStatus {
                 switch (action) {
                     case ADDED:
                         logger.info("[" + pod.getSpec().getContainers().get(0).getName() + "] - " + "New Pod added to Scheduler: " + pod.getMetadata().getName());
-                        //System.out.println(pod);
+                        //System.out.println(pod.getMetadata().getLabels().get("nextflow.io/processName"));
                         String name2 ="";
                         try {
                             name2 = pod.getMetadata().getLabels().get("nextflow.io/processName");
+                            if (name2 == null){
+                                System.out.println("There was no processname.");
+                                break;
+                            }
                         }catch(Exception e){
                             System.out.println("Error 606: No processname found.");
+                            break;
                         }
+
                         String [] names = name2.split("_");
                         String workflowname = names[2];
                         //Check if schedule available
-                        for (int j = 0; j < schedulelist.size(); j++){
-                            Pair<String, List<Pair<MyVertex,MyProcessor>>> currpair = schedulelist.get(j);
-                            if (currpair.getValue0().equals(workflowname)){
+                        for (int j = 0; j <= schedulelist.size(); j++){
+                            //Pair<String, List<Pair<MyVertex,MyProcessor>>> currpair = schedulelist.get(j);
+                            if (!schedulelist.isEmpty() && schedulelist.get(j).getValue0().equals(workflowname)){
                                 System.out.println("Schedule already existed.");
                                 break;
                             }
-                            if (j == (schedulelist.size()-1)){
+                            if (schedulelist.isEmpty() || j == (schedulelist.size()-1)){
                                 //import dot-file based on workflow from names
                                 DirectedAcyclicGraph<MyVertex, MyEdge> result = new DirectedAcyclicGraph<>(
                                         SupplierUtil.createSupplier(MyVertex.class),
@@ -207,17 +213,20 @@ public class CurrentPodNodeStatus {
                                 });
 
                                 try{
-                                    //importer.importGraph(result, new FileReader("src/main/resources/methylseq_sparse.dot"));
-
-                                    importer.importGraph(result, new FileReader("src/main/resources/"+workflowname+"_sparse.dot"));
+                                    //importer.importGraph(result, new FileReader("src/main/resources/methylseq_sparse"));
+                                    //System.out.println("workflowname:"+ workflowname+ " lowercase: " +workflowname.toLowerCase());
+                                    String workflownamelowercase = workflowname.toLowerCase();
+                                    importer.importGraph(result, new FileReader("src/main/resources/"+workflownamelowercase+"_sparse.dot"));
                                 }catch(Exception e){
                                     System.out.println("Error while reading dot-File.");
+                                    break;
                                 }
                                 //SDLSScheduler result = new SDLSScheduler()
                                 SDLSScheduler.sblevel_calc(cluster, rawdata, result, workflowname);
                                 Pair<Float, List<Pair<MyVertex,MyProcessor>>> results = SDLSScheduler.sdls_schedule(cluster, result);
                                 //System.out.println(name2);
                                 schedulelist.add(new Pair<>(workflowname, results.getValue1()));
+                                System.out.println("Added schedule to list.");
                                 break;
                             }
                         }
@@ -228,7 +237,7 @@ public class CurrentPodNodeStatus {
                         logger.info("[" + pod.getSpec().getContainers().get(0).getName() + "] - " + "Pod deleted: " + pod.getMetadata().getName());
                         SJFNScheduler.podList.removePodFromList(pod);
                         SJFNScheduler.scheduleSJFN(null);
-                        
+                        break;
                 }
 
             }
