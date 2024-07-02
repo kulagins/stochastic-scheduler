@@ -1,16 +1,11 @@
 package fonda.scheduler.labeller;
 
+import fonda.scheduler.distributedscheduler.K8Helper;
 import fonda.scheduler.distributedscheduler.SDLSScheduler;
 import fonda.scheduler.distributedscheduler.SJFNScheduler;
 import fonda.scheduler.model.*;
-import io.fabric8.kubernetes.api.model.ListOptions;
-import io.fabric8.kubernetes.api.model.Node;
-import io.fabric8.kubernetes.api.model.NodeList;
-import io.fabric8.kubernetes.api.model.Pod;
-import io.fabric8.kubernetes.client.KubernetesClient;
-import io.fabric8.kubernetes.client.Watch;
-import io.fabric8.kubernetes.client.Watcher;
-import io.fabric8.kubernetes.client.WatcherException;
+import io.fabric8.kubernetes.api.model.*;
+import io.fabric8.kubernetes.client.*;
 import io.fabric8.kubernetes.client.dsl.base.OperationContext;
 import io.fabric8.kubernetes.client.informers.ListerWatcher;
 import io.fabric8.kubernetes.client.informers.ResourceEventHandler;
@@ -140,11 +135,13 @@ public class CurrentPodNodeStatus {
         //System.out.print("stop before watcher");
         //System.out.println("Failed here if printed.");
         //result2.getEdgeSource().getLabel();
+
+        final long[] starttime = new long[1];
+        final long[] finishtime = new long[1];
         List<Pair<String, List<Pair<MyVertex,MyProcessor>>>> schedulelist = new ArrayList<>();
         client.pods().watch(options, new Watcher<Pod>() {
             @Override
             public void eventReceived(Action action, Pod pod) {
-
             //System.out.println("hello");
 
                 switch (action) {
@@ -155,7 +152,9 @@ public class CurrentPodNodeStatus {
                         try {
                             name2 = pod.getMetadata().getLabels().get("nextflow.io/processName");
                             if (name2 == null){
+                                starttime[0] = System.currentTimeMillis();
                                 System.out.println("There was no processname.");
+                                pod.getSpec().setNodeName("multinode"); //needs fixing
                                 break;
                             }
                         }catch(Exception e){
@@ -169,6 +168,20 @@ public class CurrentPodNodeStatus {
                         for (int j = 0; j <= schedulelist.size(); j++){
                             //Pair<String, List<Pair<MyVertex,MyProcessor>>> currpair = schedulelist.get(j);
                             if (!schedulelist.isEmpty() && schedulelist.get(j).getValue0().equals(workflowname)){
+                                //Assign nodeName for pod (copy from below) -> extra function if it works
+                                for (int n = 0; n < schedulelist.size(); n++){
+                                    Pair<String,List<Pair<MyVertex,MyProcessor>>> schedulepair = schedulelist.get(n);
+                                    if (workflowname.equals(schedulepair.getValue0())) {
+                                        List<Pair<MyVertex,MyProcessor>> schedule = schedulepair.getValue1();
+                                        for (int o = 0; o < schedule.size(); o++) {
+                                            if (Objects.equals(pod.getMetadata().getName(), schedule.get(o).getValue0().getLabel())) {
+                                                String nodename = schedule.get(o).getValue1().getProcname();
+                                                pod.getSpec().setNodeName(nodename);
+                                                break;
+                                            }
+                                        }
+                                    }
+                                }
                                 System.out.println("Schedule already existed.");
                                 break;
                             }
@@ -226,7 +239,22 @@ public class CurrentPodNodeStatus {
                                 Pair<Float, List<Pair<MyVertex,MyProcessor>>> results = SDLSScheduler.sdls_schedule(cluster, result);
                                 //System.out.println(name2);
                                 schedulelist.add(new Pair<>(workflowname, results.getValue1()));
-                                System.out.println("Added schedule to list.");
+                                System.out.println("Added schedule to list. Expected time: "+ results.getValue0());
+
+                                for (int n = 0; n < schedulelist.size(); n++){
+                                    Pair<String,List<Pair<MyVertex,MyProcessor>>> schedulepair = schedulelist.get(n);
+                                    if (workflowname.equals(schedulepair.getValue0())) {
+                                        List<Pair<MyVertex,MyProcessor>> schedule = schedulepair.getValue1();
+                                        for (int o = 0; o < schedule.size(); o++) {
+                                            if (Objects.equals(pod.getMetadata().getName(), schedule.get(o).getValue0().getLabel())) {
+                                                String nodename = schedule.get(o).getValue1().getProcname();
+                                                pod.getSpec().setNodeName(nodename);
+                                                break;
+                                            }
+                                        }
+                                    }
+                                }
+
                                 break;
                             }
                         }
@@ -235,8 +263,23 @@ public class CurrentPodNodeStatus {
                         break;
                     case DELETED:
                         logger.info("[" + pod.getSpec().getContainers().get(0).getName() + "] - " + "Pod deleted: " + pod.getMetadata().getName());
-                        SJFNScheduler.podList.removePodFromList(pod);
-                        SJFNScheduler.scheduleSJFN(null);
+                        String taskname = pod.getMetadata().getName();
+                        for (Pair<String, List<Pair<MyVertex,MyProcessor>>> schedulepair: schedulelist) {
+                            if (pod.getMetadata().getLabels().get("nextflow.io/processName").equals(schedulepair.getValue0())) {
+                                List<Pair<MyVertex,MyProcessor>> schedule = schedulepair.getValue1();
+                                for (int p = 0; p <schedule.size(); p++) {
+                                    Pair<MyVertex,MyProcessor> pair = schedule.get(p);
+                                    if (pair.getValue0().getLabel().equals(taskname) && p == (schedule.size()-1) ){
+                                        finishtime[0] = System.currentTimeMillis();
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                        long exectime = finishtime[0] - starttime[0];
+                        System.out.println("The time for the execution of the workflow is: "+ exectime);
+                        //SJFNScheduler.podList.removePodFromList(pod);
+                        //SJFNScheduler.scheduleSJFN(null);
                         break;
                 }
 

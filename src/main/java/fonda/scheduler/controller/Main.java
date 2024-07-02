@@ -19,25 +19,29 @@ public class Main {
 
     public static void main(String[] args) {
 
-        List<MyProcessor> cluster = readCluster();
+        String name = "node_description";
+        List<MyProcessor> datacluster = readCluster(name);
 
-        Pair<List<List<Object>>,List<DataRow>> listpair = readIn(cluster);
+        Pair<List<List<Object>>,List<DataRow>> listpair = readIn(datacluster);
         List<List<Object>> listofLists;
         listofLists = listpair.getValue0();
         List<DataRow> rawdata;
         rawdata = listpair.getValue1();
 
+        String name2 = "cluster_description";
+        List<MyProcessor> calccluster = readCluster(name2);
+
         KubernetesClient client = new DefaultKubernetesClient();
 
-        CurrentPodNodeStatus nodeInformation = new CurrentPodNodeStatus(client, listofLists, rawdata, cluster);
+        CurrentPodNodeStatus nodeInformation = new CurrentPodNodeStatus(client, listofLists, rawdata, calccluster);
 
     }
 
     //readin of cluster-structure
-    public static List<MyProcessor>  readCluster(){
+    public static List<MyProcessor>  readCluster(String name){
         List<MyProcessor> cluster = new ArrayList<>();
         try {
-            FileReader in = new FileReader("src/main/resources/node_description.csv");
+            FileReader in = new FileReader("src/main/resources/"+name+".csv");
             BufferedReader br = new BufferedReader(in);
             String line;
             while ((line=br.readLine()) != null){
@@ -98,7 +102,7 @@ public class Main {
                 String machine = values[0];
                 String workflow = values[2];
                 String task = values[3];
-                if (machine.equals("Machine") && workflow.equals("Workflow") && task.equals("Task")){
+                if (machine.equals("Machine") && workflow.equals("Workflow") && task.equals("Taskname")){
                     continue;
                 }
                 float TaskinputSize = 0;
@@ -112,9 +116,19 @@ public class Main {
                     break;
                     //continue;
                 }
+
                 //Cpumatching based on clusterlist
                 for (MyProcessor workproc : cluster) {
                     if (machine.equalsIgnoreCase(workproc.getProcname())) {
+                        cpuspeed = workproc.getProcspeed();
+                        break;
+                    }
+
+                    if (machine.equals("asok01") && workproc.getProcname().equals("A1")){
+                        cpuspeed = workproc.getProcspeed();
+                        break;
+                    }
+                    if (machine.equals("asok02") && workproc.getProcname().equals("A2")){
                         cpuspeed = workproc.getProcspeed();
                         break;
                     }
@@ -126,7 +140,7 @@ public class Main {
                         real = Float.parseFloat(values[8]);
                     }
                 }
-                catch(Exception e){
+                catch(Exception e) {
                     System.out.println("Error on realtime parsing. Error 202");
                     break;
                 }

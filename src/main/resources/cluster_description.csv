@@ -1,0 +1,3 @@
+Machine,Amount,CPU,Memory,Storage,CPU_events,LINPACK,RAM_score,read_IOPS,write_IOPS
+multinode,1,3,3,HDD,458,3959800,18700,414,415
+multinode-m02,1,3,3,HDD,223,,11000,306,301
