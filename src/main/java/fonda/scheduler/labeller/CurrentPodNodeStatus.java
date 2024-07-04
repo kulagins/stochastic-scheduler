@@ -59,6 +59,8 @@ public class CurrentPodNodeStatus {
 
     private static final Logger logger = LoggerFactory.getLogger(CurrentPodNodeStatus.class);
 
+    private final List<Node> nodeList;
+
     public CurrentPodNodeStatus(KubernetesClient client, List<List<Object>> listofLists, List<DataRow> rawdata, List<MyProcessor> cluster) {
         this.client = client;
 
@@ -73,6 +75,9 @@ public class CurrentPodNodeStatus {
         this.workerQueueNode = new ConcurrentLinkedQueue<>();
 
         this.operationContext = new OperationContext();
+
+        this.nodeList = client.nodes().list().getItems();
+
 
 
         setUpIndexInformerNode();
@@ -176,7 +181,12 @@ public class CurrentPodNodeStatus {
                                         for (int o = 0; o < schedule.size(); o++) {
                                             if (Objects.equals(pod.getMetadata().getName(), schedule.get(o).getValue0().getLabel())) {
                                                 String nodename = schedule.get(o).getValue1().getProcname();
-                                                pod.getSpec().setNodeName(nodename);
+                                                Node currnode = findNode(nodeList, nodename);
+                                                Pair<Pod,Node> currpair = K8Helper.bindPodToNode(pod,currnode,-1.0);
+                                                System.out.println("Scheduled: " +currpair.getValue0().getMetadata().getLabels()+" to " + currnode.getMetadata().getName());
+                                                //check ob -1.0 korrekt ?!
+                                                //hier bindpodtonode einfügen siehe sjfn copy to anderen setnodename
+                                                //pod.getSpec().setNodeName(nodename);
                                                 break;
                                             }
                                         }
@@ -248,7 +258,10 @@ public class CurrentPodNodeStatus {
                                         for (int o = 0; o < schedule.size(); o++) {
                                             if (Objects.equals(pod.getMetadata().getName(), schedule.get(o).getValue0().getLabel())) {
                                                 String nodename = schedule.get(o).getValue1().getProcname();
-                                                pod.getSpec().setNodeName(nodename);
+                                                Node currnode = findNode(nodeList, nodename);
+                                                Pair<Pod,Node> currpair = K8Helper.bindPodToNode(pod,currnode,-1.0);
+                                                System.out.println("Scheduled: " +currpair.getValue0().getMetadata().getLabels()+" to " + currnode.getMetadata().getName());
+                                                //pod.getSpec().setNodeName(nodename);
                                                 break;
                                             }
                                         }
@@ -269,7 +282,7 @@ public class CurrentPodNodeStatus {
                                 List<Pair<MyVertex,MyProcessor>> schedule = schedulepair.getValue1();
                                 for (int p = 0; p <schedule.size(); p++) {
                                     Pair<MyVertex,MyProcessor> pair = schedule.get(p);
-                                    if (pair.getValue0().getLabel().equals(taskname) && p == (schedule.size()-1) ){
+                                    if (pair.getValue0().getLabel().equals(taskname) && p == (schedule.size()-2) ){
                                         finishtime[0] = System.currentTimeMillis();
                                         break;
                                     }
@@ -292,6 +305,15 @@ public class CurrentPodNodeStatus {
         });
 
 
+    }
+
+    private Node findNode(List<Node> nodeList, String procname){
+        for (Node currnode : nodeList){
+            if (currnode.getMetadata().getName().equals(procname)){
+                return currnode;
+            }
+        }
+        return null;
     }
 
     /**

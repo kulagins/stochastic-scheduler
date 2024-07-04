@@ -167,7 +167,7 @@ public class K8Helper {
         }
     }
 
-    static Pair<Pod, Node> bindPodToNode(Pod pod, Node node, Double score) {
+    public static Pair<Pod, Node> bindPodToNode(Pod pod, Node node, Double score) {
         Binding b1 = new Binding();
 
         ObjectMeta om = new ObjectMeta();
