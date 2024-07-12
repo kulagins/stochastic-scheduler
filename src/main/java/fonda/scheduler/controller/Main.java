@@ -93,9 +93,8 @@ public class Main {
             FileReader in2 = new FileReader("src/main/resources/data.csv");
             BufferedReader br2 = new BufferedReader(in2);
             String line2;
-            //System.out.println("Reader erfolgreich.");
             while((line2 = br2.readLine()) != null){
-                //Unterscheidung anhand von Task und Maschine
+                //differentiate between task and machine
 
                 String [] values = line2.split(",");
 
@@ -145,7 +144,7 @@ public class Main {
                     break;
                 }
 
-                float rxpx = real*cpuspeed; //realtime right now zero producing errors
+                float rxpx = real*cpuspeed;
                 int runs = 1;
                 sum_e = rxpx;//when first run
 

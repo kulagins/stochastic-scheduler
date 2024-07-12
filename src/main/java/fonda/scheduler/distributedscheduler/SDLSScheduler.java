@@ -78,20 +78,20 @@ public class SDLSScheduler {
         while (!revtoplist.isEmpty()){
             MyVertex current_vx = revtoplist.get(0);
             List<Float> vx_wcharlist = new ArrayList<>();
-            //System.out.println("currentvx:"+current_vx.getLabel());
+
             Set<MyEdge> edgelistpar = graph.outgoingEdgesOf(current_vx);
             for(MyEdge edge : edgelistpar){
                 int counttis = 0;
                 List<Pair<String,Float>> listOfAncestors = new ArrayList<>();
                 MyVertex child = graph.getEdgeTarget(edge);
-                //System.out.println("child:"+child.getLabel());
+
                 float taskinputsize_child = 0;
                 List<Float> tasksizelist = new ArrayList<>();
                 List<List<Float>> wcharlist = new ArrayList<>();
                 Set<MyEdge> edgelistchild = graph.incomingEdgesOf(child);
                 for(MyEdge edge2 : edgelistchild){
                     MyVertex ancestor = graph.getEdgeSource(edge2);
-                    //System.out.println("ancestor:"+ancestor.getLabel());
+
                     String name = ancestor.getLabel();
                     float wsum = 0;
                     List<Float> worklist2 = new ArrayList<>();
@@ -124,27 +124,23 @@ public class SDLSScheduler {
                         w_vx = pair.getValue1();
                     }
                 }
-                //System.out.println("wvx:"+w_vx);
-                //System.out.println("wtotal:"+wtotal);
-                //System.out.println("tischild:"+taskinputsize_child); //fail check were wrong
+
                 float w_connectexp = taskinputsize_child * (w_vx/wtotal);
-                //System.out.println("wconnectexp:"+w_connectexp);
+
                 float w_connectvar;
                 float w_connectvar_sum = 0;
                 float smallestsize =  smallestSize(wcharlist,tasksizelist,vx_wcharlist);
 
-                for (int j = 0; j < smallestsize; j++){ //change to suit worstcase only smallest n calculations!!
+                for (int j = 0; j < smallestsize; j++){
                     float taskinputsizework = tasksizelist.get(j);
                     float currentvx_wchar = vx_wcharlist.get(j);
                     float wchar_divider = 0;
                     for (int k = 0; k < wcharlist.size(); k++){
                         wchar_divider = wchar_divider + wcharlist.get(k).get(j);
                     }
-                    //System.out.println("tiswork:"+taskinputsizework);
-                    //System.out.println("currentvxchar:"+currentvx_wchar);
-                    //System.out.println("wchardividertotal:"+wchar_divider);
+
                     float help = (taskinputsizework * (currentvx_wchar/wchar_divider)) - w_connectexp;
-                    //System.out.println("help:"+help);
+
                     w_connectvar_sum = w_connectvar_sum + (help * help);
                 }
                 w_connectvar = w_connectvar_sum/smallestsize;
@@ -162,12 +158,12 @@ public class SDLSScheduler {
                 float child_sblevelexp = child.getSb_levelexp();
                 float child_sblevelvar = child.getSb_levelvar();
                 float sblevelexp = child_sblevelexp + w_connectexp;
-                //System.out.println("Sblevelexp with connectexp: "+ sblevelexp+ "without: "+ child_sblevelexp);
+
                 float sblevelvar = child_sblevelvar + w_connectvar;
                 // Comparison of sb_levels
                 if (current_vx.getSb_levelexp()== 0 && current_vx.getSb_levelvar() == 0){
                     current_vx.setSb_levelexp(sblevelexp);
-                    //System.out.println("sblevelexp without node itself set to:"+sblevelexp);
+
                     current_vx.setSb_levelvar(sblevelvar);
                 }else{
                     Pair<Float,Float> maxresult = maxValues(current_vx.getSb_levelexp(),sblevelexp,current_vx.getSb_levelvar(),sblevelvar);
@@ -221,33 +217,21 @@ public class SDLSScheduler {
         }
         double epsilon =  Math.sqrt(var1 + var2);
         double xi = (exp1 - exp2)/epsilon;
-        //System.out.println("xi :"+ xi);
+
         double psi = ( (1/Math.sqrt(2*Math.PI)) * Math.pow(Math.E, (- 1/2.0*(Math.pow(xi,2.0)))) );
-        //System.out.println("psi :"+ psi);
+
         float help = (float) (xi/Math.sqrt(2));
         float phi = (float) ((erf(help)+1)/2);
-        //System.out.println("minuserf-value: "+erf(-xi/Math.sqrt(2)) );
+
         float help2 = (float) (-xi/Math.sqrt(2));
         float nphi = (float) ((erf(help2)+1)/2); //either +1/2 and no minus in front or minus in front and +1/2 check formula !!!
         resultExp = (float) (exp2 + ( (exp1 - exp2)* phi ) + (epsilon* psi));
-        //System.out.println("nphi:"+nphi);
-        //System.out.println("Values from maxValues:");
+
         resultVar = (float)(( (Math.pow(exp1,2.0) + var1)* phi)
                 + ( (Math.pow(exp2,2.0) + var2 )* nphi) //this term is added but with negativ integral result integralresult is a area under a func and should not be negativ becuz negativ area cannot exist
                 + ( (exp1 + exp2)*epsilon*psi) //thus nphi should be positiv or negativ presign of 2nd term needed !!!
                 - (Math.pow(resultExp,2.0)) );
-        //System.out.println("phi:"+phi);
-        //float term1 = (float) ((Math.pow(exp1,2)+var1) *phi);
-        //System.out.println("first term:"+ term1);
 
-        //float term2 = (float) ((Math.pow(exp2,2)+var2) *nphi);
-        //System.out.println("nphi:"+nphi);
-        //System.out.println("second term:"+ term2);
-
-        //float term3 = (float) ((exp1+exp2)*epsilon*psi);
-        //System.out.println("third term:"+ term3);
-        //System.out.println("resultvar:"+ resultVar);
-        //System.out.println("4th term: "+ Math.pow(resultExp,2));
         float diffexp1 = Math.abs(exp1 - resultExp);
         float diffexp2 = Math.abs(exp2 - resultExp);
         float diffvar1 = Math.abs(var1 - resultVar);
@@ -354,9 +338,9 @@ public class SDLSScheduler {
         MyVertex entry = findEntry(tasklist, graph);
         taskpool.add(entry);
 
-        float w_p = calcWp(cluster); //listoflists vorher
-        List<Pair<MyVertex, MyProcessor>> schedule = new ArrayList<>(); // war String, Float wieso ? siehe blätter?
-        //int i = 0;
+        float w_p = calcWp(cluster); //listoflists before
+        List<Pair<MyVertex, MyProcessor>> schedule = new ArrayList<>();
+
         while(!taskpool.isEmpty()){
             //MyVertex
             List<SDLentry> listSDL = new ArrayList<>();
@@ -364,14 +348,12 @@ public class SDLSScheduler {
                 for (MyProcessor processor :cluster){
                     //calc DRT for this task-processor pair (use formula 3 from paper)
                     Pair<Float, Float> drtvalues = getdrt(v_i, graph, schedule, processor);
-                    //System.out.println("drtvalues: "+ drtvalues);
+
                     //calcStvalues
                     Pair<Float, Float> stvalues = maxValues(processor.getFtexp(), drtvalues.getValue0(), processor.getFtvar(), drtvalues.getValue1());
-                    //System.out.println("stvalues:"+ stvalues);
-                    //System.out.println("processorft:"+processor.getFtexp());
+
                     //calcSDL;
                     Pair<Float, Float> sdlvalues = calculateSDL(v_i, processor, w_p, stvalues.getValue0(), stvalues.getValue1());
-                    //System.out.println("sdlvalues: " + sdlvalues);
                     SDLentry sdlentry = new SDLentry(v_i, processor,sdlvalues.getValue0(), sdlvalues.getValue1(),stvalues.getValue0(),stvalues.getValue1());
                     listSDL.add(sdlentry); //check if list empty after each assign !!!?!?!
                 }
@@ -379,21 +361,19 @@ public class SDLSScheduler {
             //Stochastic greater than every other SDL//get the task with greatest SDL;
             Pair<MyVertex,MyProcessor> taskprocpair = stochasticGreatest(listSDL);
             schedule.add(taskprocpair);// adds task-processor-pair to the schedule(our assign task to proc)
-            //System.out.println("taskprocpair :"+ taskprocpair);
+
             MyVertex pushedtask = taskprocpair.getValue0(); //set to stochastic greatest task, remove from taskpool and add to schedule list
-            taskpool.remove(pushedtask); // remove only greatest Task?!?!
+            taskpool.remove(pushedtask);
             pushedtask.setPushed(true);
 
             //push unconstrained childs into readypool
             pushChilds(taskpool, pushedtask, graph);
-            //System.out.println("taskpool:"+ taskpool);
-            //i++;
+
             //update earliest execution start time
             //updateST Funktion schreiben beachten Formeln 1-4 im Paper!!! ?!?!
             //split into FT update and calcST in calcSDL from FT of the processor and the DRT of Task-proc-pair
             MyProcessor chosenproc = taskprocpair.getValue1();
             Pair<Float,Float> stvalues = findST(taskprocpair,listSDL);
-            //System.out.println("stvalues: "+ stvalues);
             float completiontimeexp = stvalues.getValue0() + pushedtask.getExpected()/ chosenproc.getProcspeed() ;
             float completiontimevar = stvalues.getValue1() + pushedtask.getVariance()/ chosenproc.getProcspeed() ;
             //update the FT of the chosenproc and update the cttime for the pushedtask
@@ -404,7 +384,6 @@ public class SDLSScheduler {
             pushedtask.setCTtimevar(completiontimevar);
             //updateST(cluster, graph, pushedtask, taskprocpair.getValue1(),taskpool);
         }
-        //System.out.println("i:"+i);
         float makespan = findmakespan(cluster); //change to completiontime for last task thus => makespan = finishtime
         return new Pair<>(makespan, schedule);
     }
@@ -425,7 +404,7 @@ public class SDLSScheduler {
     public static Pair<Float,Float> calculateSDL( MyVertex vertex, MyProcessor processor, float w_p, float stexp, float stvar){
         float varcompcapExp = calcVaryCompcap(vertex.getExpected(), w_p, processor);
         float varcompcapVar = calcVaryCompcap(vertex.getVariance(), w_p, processor);
-        //System.out.println("varcompcap-values: "+varcompcapExp + " "+ varcompcapVar);
+
         float sdlexp = vertex.getSb_levelexp() - stexp + varcompcapExp;//prüfen ob ST bei beiden gleich und ob/wie rechnungen anpassen
         float sdlvar = vertex.getSb_levelvar() - stvar + varcompcapVar;
         return new Pair<>(sdlexp,sdlvar);
@@ -449,11 +428,11 @@ public class SDLSScheduler {
                 my = currentry.getSdlexp();
                 sigma = Math.sqrt(currentry.getSdlvar());
             }
-            //System.out.println("sigma: "+ sigma);
+
             double errfctterm = 1 + ((0.9*sigma*Math.sqrt(2*Math.PI)*Math.sqrt(2))/(-Math.sqrt(Math.PI)*sigma));
-            //System.out.println("errfctterm: "+ errfctterm);
+
             double x = (erfInv(errfctterm)*2*sigma)-(Math.sqrt(2)*my)/(-Math.sqrt(2));
-            //System.out.println("x :"+ x);
+
             if (greatestx == null || greatestx < x ){
                 greatestx = x;
                 greatestname = currentry.getTaskname();
@@ -478,13 +457,12 @@ public class SDLSScheduler {
 
         for (MyEdge edge : outedges) {
             MyVertex child = graph.getEdgeTarget(edge);
-            //System.out.println("child:"+child.getLabel());
             Set<MyEdge> childancestors = graph.incomingEdgesOf(child);
-            //System.out.println("ancestorslist:"+childancestors);
+
             boolean allpushed = true;
             for (MyEdge childedge : childancestors) {
                 MyVertex ancestor = graph.getEdgeSource(childedge);
-                //System.out.println("ancestors:"+ ancestor.getLabel());
+
                 if (!ancestor.getPushed()) {
                     allpushed = false;
                     break;

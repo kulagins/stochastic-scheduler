@@ -17,9 +17,6 @@ public class MyVertex {
 
         public float completiontimevar;
 
-        /*public MyVertex(String label){
-            this.label = label;
-        }*/
         public void setLabel(String label){
             this.label = label;
         }

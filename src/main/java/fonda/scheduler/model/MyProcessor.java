@@ -17,8 +17,6 @@ public class MyProcessor {
     public MyProcessor(String name, float speed){
         this.procname = name;
         this.procspeed = speed;
-        //this.stexp = 0;
-        //this.stvar = 0;
         this.ftexp = 0;
         this.ftvar = 0;
     }
@@ -36,20 +34,6 @@ public class MyProcessor {
     public float getProcspeed(){
         return procspeed;
     }
-
-    /*public void setStexp(float startexp){
-        this.stexp = startexp;
-    }
-    public float getStexp(){
-        return stexp;
-    }
-
-    public void setStvar(float startvar){
-        this.stvar = startvar;
-    }
-    public float getStvar(){
-        return stvar;
-    }*/
 
     public void setFtexp(float finishexp){
         this.ftexp = finishexp;
