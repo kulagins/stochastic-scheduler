@@ -137,17 +137,12 @@ public class CurrentPodNodeStatus {
             System.out.println("Error could not import the File. Error 404i." + e);
         }*/
 
-        //System.out.print("stop before watcher");
-        //System.out.println("Failed here if printed.");
-        //result2.getEdgeSource().getLabel();
-
         final long[] starttime = new long[1];
         final long[] finishtime = new long[1];
         List<Pair<String, List<Pair<MyVertex,MyProcessor>>>> schedulelist = new ArrayList<>();
         client.pods().watch(options, new Watcher<Pod>() {
             @Override
             public void eventReceived(Action action, Pod pod) {
-            //System.out.println("hello");
 
                 switch (action) {
                     case ADDED:
@@ -159,7 +154,7 @@ public class CurrentPodNodeStatus {
                             if (name2 == null){
                                 starttime[0] = System.currentTimeMillis();
                                 System.out.println("There was no processname.");
-                                pod.getSpec().setNodeName("multinode"); //needs fixing
+                                pod.getSpec().setNodeName("kind-control-plane"); //needs fixing
                                 break;
                             }
                         }catch(Exception e){
@@ -184,8 +179,15 @@ public class CurrentPodNodeStatus {
                                                 Node currnode = findNode(nodeList, nodename);
                                                 Pair<Pod,Node> currpair = K8Helper.bindPodToNode(pod,currnode,-1.0);
                                                 System.out.println("Scheduled: " +currpair.getValue0().getMetadata().getLabels()+" to " + currnode.getMetadata().getName());
+                                                try{
+                                                    FileWriter writer = new FileWriter("testresults.txt");
+                                                    writer.write("Scheduled: " +currpair.getValue0().getMetadata().getLabels()+" to " + currnode.getMetadata().getName());
+                                                    writer.close();
+                                                }catch (IOException e){
+                                                    System.out.println("An error occured during creation of Writer.");
+                                                    e.printStackTrace();
+                                                }
                                                 //check ob -1.0 korrekt ?!
-                                                //hier bindpodtonode einfügen siehe sjfn copy to anderen setnodename
                                                 //pod.getSpec().setNodeName(nodename);
                                                 break;
                                             }
@@ -207,8 +209,7 @@ public class CurrentPodNodeStatus {
                                 importer.addVertexAttributeConsumer((p,a)->{    //adds attributes to graph
                                     String name = p.getSecond();
                                     MyVertex myvertex = p.getFirst();
-                                    //System.out.println("p ist :" + p);
-                                    //System.out.println("a ist :" + a);
+
                                     Attribute attrs = a;
                                     int zaehler;
                                     if (name.equals("label")) {
@@ -240,16 +241,24 @@ public class CurrentPodNodeStatus {
                                     //System.out.println("workflowname:"+ workflowname+ " lowercase: " +workflowname.toLowerCase());
                                     String workflownamelowercase = workflowname.toLowerCase();
                                     importer.importGraph(result, new FileReader("src/main/resources/"+workflownamelowercase+"_sparse.dot"));
-                                }catch(Exception e){
+                                }catch(Exception e){ //evtl work/hoegvinc davor bei src
                                     System.out.println("Error while reading dot-File.");
                                     break;
                                 }
-                                //SDLSScheduler result = new SDLSScheduler()
+
                                 SDLSScheduler.sblevel_calc(cluster, rawdata, result, workflowname);
                                 Pair<Float, List<Pair<MyVertex,MyProcessor>>> results = SDLSScheduler.sdls_schedule(cluster, result);
                                 //System.out.println(name2);
                                 schedulelist.add(new Pair<>(workflowname, results.getValue1()));
                                 System.out.println("Added schedule to list. Expected time: "+ results.getValue0());
+                                try{
+                                    FileWriter writer = new FileWriter("testresults.txt");
+                                    writer.write("Added schedule to list. Expected time: "+ results.getValue0());
+                                    writer.close();
+                                }catch (IOException e){
+                                    System.out.println("An error occured during creation of Writer.");
+                                    e.printStackTrace();
+                                }
 
                                 for (int n = 0; n < schedulelist.size(); n++){
                                     Pair<String,List<Pair<MyVertex,MyProcessor>>> schedulepair = schedulelist.get(n);
@@ -291,6 +300,14 @@ public class CurrentPodNodeStatus {
                         }
                         long exectime = finishtime[0] - starttime[0];
                         System.out.println("The time for the execution of the workflow is: "+ exectime);
+                        try{
+                            FileWriter writer = new FileWriter("testresults.txt");
+                            writer.write("The time for the execution of the workflow is: "+ exectime);
+                            writer.close();
+                        }catch (IOException e){
+                            System.out.println("An error occured during creation of Writer.");
+                            e.printStackTrace();
+                        }
                         //SJFNScheduler.podList.removePodFromList(pod);
                         //SJFNScheduler.scheduleSJFN(null);
                         break;

@@ -10,6 +10,7 @@ import org.javatuples.Pair;
 //import javax.swing.*;
 //import javax.xml.crypto.Data;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -18,6 +19,18 @@ import java.util.List;
 public class Main {
 
     public static void main(String[] args) {
+
+        try{
+            File myTest = new File("testresults.txt");
+            if (myTest.createNewFile()){
+                System.out.println("File created: "+ myTest.getName());
+            }else{
+                System.out.println("File already exists.");
+            }
+        }catch (IOException e){
+            System.out.println("An error occured during file creation.");
+            e.printStackTrace();
+        }
 
         String name = "node_description";
         List<MyProcessor> datacluster = readCluster(name);
