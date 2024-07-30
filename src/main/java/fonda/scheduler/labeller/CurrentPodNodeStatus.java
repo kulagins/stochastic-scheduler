@@ -143,174 +143,175 @@ public class CurrentPodNodeStatus {
         client.pods().watch(options, new Watcher<Pod>() {
             @Override
             public void eventReceived(Action action, Pod pod) {
-
-                switch (action) {
-                    case ADDED:
-                        logger.info("[" + pod.getSpec().getContainers().get(0).getName() + "] - " + "New Pod added to Scheduler: " + pod.getMetadata().getName());
-                        //System.out.println(pod.getMetadata().getLabels().get("nextflow.io/processName"));
-                        String name2 ="";
-                        try {
-                            name2 = pod.getMetadata().getLabels().get("nextflow.io/processName");
-                            if (name2 == null){
-                                starttime[0] = System.currentTimeMillis();
-                                System.out.println("There was no processname.");
-                                pod.getSpec().setNodeName("kind-control-plane"); //needs fixing
-                                break;
-                            }
-                        }catch(Exception e){
-                            System.out.println("Error 606: No processname found.");
-                            break;
-                        }
-
-                        String [] names = name2.split("_");
-                        String workflowname = names[2];
-                        //Check if schedule available
-                        for (int j = 0; j <= schedulelist.size(); j++){
-                            //Pair<String, List<Pair<MyVertex,MyProcessor>>> currpair = schedulelist.get(j);
-                            if (!schedulelist.isEmpty() && schedulelist.get(j).getValue0().equals(workflowname)){
-                                //Assign nodeName for pod (copy from below) -> extra function if it works
-                                for (int n = 0; n < schedulelist.size(); n++){
-                                    Pair<String,List<Pair<MyVertex,MyProcessor>>> schedulepair = schedulelist.get(n);
-                                    if (workflowname.equals(schedulepair.getValue0())) {
-                                        List<Pair<MyVertex,MyProcessor>> schedule = schedulepair.getValue1();
-                                        for (int o = 0; o < schedule.size(); o++) {
-                                            if (Objects.equals(pod.getMetadata().getName(), schedule.get(o).getValue0().getLabel())) {
-                                                String nodename = schedule.get(o).getValue1().getProcname();
-                                                Node currnode = findNode(nodeList, nodename);
-                                                Pair<Pod,Node> currpair = K8Helper.bindPodToNode(pod,currnode,-1.0);
-                                                System.out.println("Scheduled: " +currpair.getValue0().getMetadata().getLabels()+" to " + currnode.getMetadata().getName());
-                                                try{
-                                                    FileWriter writer = new FileWriter("testresults.txt");
-                                                    writer.write("Scheduled: " +currpair.getValue0().getMetadata().getLabels()+" to " + currnode.getMetadata().getName());
-                                                    writer.close();
-                                                }catch (IOException e){
-                                                    System.out.println("An error occured during creation of Writer.");
-                                                    e.printStackTrace();
-                                                }
-                                                //check ob -1.0 korrekt ?!
-                                                //pod.getSpec().setNodeName(nodename);
-                                                break;
-                                            }
-                                        }
-                                    }
-                                }
-                                System.out.println("Schedule already existed.");
-                                break;
-                            }
-                            if (schedulelist.isEmpty() || j == (schedulelist.size()-1)){
-                                //import dot-file based on workflow from names
-                                DirectedAcyclicGraph<MyVertex, MyEdge> result = new DirectedAcyclicGraph<>(
-                                        SupplierUtil.createSupplier(MyVertex.class),
-                                        SupplierUtil.createSupplier(MyEdge.class),
-                                        false
-                                );
-
-                                DOTImporter<MyVertex, MyEdge> importer = new DOTImporter<>();
-                                importer.addVertexAttributeConsumer((p,a)->{    //adds attributes to graph
-                                    String name = p.getSecond();
-                                    MyVertex myvertex = p.getFirst();
-
-                                    Attribute attrs = a;
-                                    int zaehler;
-                                    if (name.equals("label")) {
-                                        String label = attrs.getValue();
-                                        myvertex.setLabel(attrs.getValue());
-                                        for (zaehler = 0; zaehler < listofLists.size(); zaehler++) {
-                                            List<Object> worklist = new ArrayList<>();
-                                            worklist = listofLists.get(zaehler);
-                                            String taskname = (String) worklist.get(2);
-                                            if (taskname.equals(label)) { //add workflowname
-                                                float exp = (float) worklist.get(5);
-                                                float var = (float) worklist.get(6);
-                                                myvertex.setExpected(exp);
-                                                myvertex.setVariance(var);
-                                                myvertex.setPushed(false);
-                                            }
-                                            if (label.equals("Start") || label.equals("End")) {
-                                                myvertex.setExpected(0);
-                                                myvertex.setVariance(0);
-                                                myvertex.setPushed(false);
-                                            }
-                                        }
-                                    }
-
-                                });
-
-                                try{
-                                    //importer.importGraph(result, new FileReader("src/main/resources/methylseq_sparse"));
-                                    //System.out.println("workflowname:"+ workflowname+ " lowercase: " +workflowname.toLowerCase());
-                                    String workflownamelowercase = workflowname.toLowerCase();
-                                    importer.importGraph(result, new FileReader("src/main/resources/"+workflownamelowercase+"_sparse.dot"));
-                                }catch(Exception e){ //evtl work/hoegvinc davor bei src
-                                    System.out.println("Error while reading dot-File.");
+                if (pod.getMetadata().getNamespace().equals("hoegvinc")) {
+                    switch (action) {
+                        case ADDED:
+                            logger.info("[" + pod.getSpec().getContainers().get(0).getName() + "] - " + "New Pod added to Scheduler: " + pod.getMetadata().getName());
+                            //System.out.println(pod.getMetadata().getLabels().get("nextflow.io/processName"));
+                            String name2 = "";
+                            try {
+                                name2 = pod.getMetadata().getLabels().get("nextflow.io/processName");
+                                if (name2 == null) {
+                                    starttime[0] = System.currentTimeMillis();
+                                    System.out.println("There was no processname.");
+                                    pod.getSpec().setNodeName("hu-master-c21"); //needs fixing
                                     break;
                                 }
+                            } catch (Exception e) {
+                                System.out.println("Error 606: No processname found.");
+                                break;
+                            }
 
-                                SDLSScheduler.sblevel_calc(cluster, rawdata, result, workflowname);
-                                Pair<Float, List<Pair<MyVertex,MyProcessor>>> results = SDLSScheduler.sdls_schedule(cluster, result);
-                                //System.out.println(name2);
-                                schedulelist.add(new Pair<>(workflowname, results.getValue1()));
-                                System.out.println("Added schedule to list. Expected time: "+ results.getValue0());
-                                try{
-                                    FileWriter writer = new FileWriter("testresults.txt");
-                                    writer.write("Added schedule to list. Expected time: "+ results.getValue0());
-                                    writer.close();
-                                }catch (IOException e){
-                                    System.out.println("An error occured during creation of Writer.");
-                                    e.printStackTrace();
-                                }
-
-                                for (int n = 0; n < schedulelist.size(); n++){
-                                    Pair<String,List<Pair<MyVertex,MyProcessor>>> schedulepair = schedulelist.get(n);
-                                    if (workflowname.equals(schedulepair.getValue0())) {
-                                        List<Pair<MyVertex,MyProcessor>> schedule = schedulepair.getValue1();
-                                        for (int o = 0; o < schedule.size(); o++) {
-                                            if (Objects.equals(pod.getMetadata().getName(), schedule.get(o).getValue0().getLabel())) {
-                                                String nodename = schedule.get(o).getValue1().getProcname();
-                                                Node currnode = findNode(nodeList, nodename);
-                                                Pair<Pod,Node> currpair = K8Helper.bindPodToNode(pod,currnode,-1.0);
-                                                System.out.println("Scheduled: " +currpair.getValue0().getMetadata().getLabels()+" to " + currnode.getMetadata().getName());
-                                                //pod.getSpec().setNodeName(nodename);
-                                                break;
+                            String[] names = name2.split("_");
+                            String workflowname = names[2];
+                            //Check if schedule available
+                            for (int j = 0; j <= schedulelist.size(); j++) {
+                                //Pair<String, List<Pair<MyVertex,MyProcessor>>> currpair = schedulelist.get(j);
+                                if (!schedulelist.isEmpty() && schedulelist.get(j).getValue0().equals(workflowname)) {
+                                    //Assign nodeName for pod (copy from below) -> extra function if it works
+                                    for (int n = 0; n < schedulelist.size(); n++) {
+                                        Pair<String, List<Pair<MyVertex, MyProcessor>>> schedulepair = schedulelist.get(n);
+                                        if (workflowname.equals(schedulepair.getValue0())) {
+                                            List<Pair<MyVertex, MyProcessor>> schedule = schedulepair.getValue1();
+                                            for (int o = 0; o < schedule.size(); o++) {
+                                                if (Objects.equals(pod.getMetadata().getName(), schedule.get(o).getValue0().getLabel())) {
+                                                    String nodename = schedule.get(o).getValue1().getProcname();
+                                                    Node currnode = findNode(nodeList, nodename);
+                                                    Pair<Pod, Node> currpair = K8Helper.bindPodToNode(pod, currnode, -1.0);
+                                                    System.out.println("Scheduled: " + currpair.getValue0().getMetadata().getLabels() + " to " + currnode.getMetadata().getName());
+                                                    try {
+                                                        FileWriter writer = new FileWriter("testresults.txt");
+                                                        writer.write("Scheduled: " + currpair.getValue0().getMetadata().getLabels() + " to " + currnode.getMetadata().getName());
+                                                        writer.close();
+                                                    } catch (IOException e) {
+                                                        System.out.println("An error occured during creation of Writer.");
+                                                        e.printStackTrace();
+                                                    }
+                                                    //check ob -1.0 korrekt ?!
+                                                    //pod.getSpec().setNodeName(nodename);
+                                                    break;
+                                                }
                                             }
                                         }
                                     }
+                                    System.out.println("Schedule already existed.");
+                                    break;
                                 }
+                                if (schedulelist.isEmpty() || j == (schedulelist.size() - 1)) {
+                                    //import dot-file based on workflow from names
+                                    DirectedAcyclicGraph<MyVertex, MyEdge> result = new DirectedAcyclicGraph<>(
+                                            SupplierUtil.createSupplier(MyVertex.class),
+                                            SupplierUtil.createSupplier(MyEdge.class),
+                                            false
+                                    );
 
-                                break;
-                            }
-                        }
-                        break;
-                    case MODIFIED:
-                        break;
-                    case DELETED:
-                        logger.info("[" + pod.getSpec().getContainers().get(0).getName() + "] - " + "Pod deleted: " + pod.getMetadata().getName());
-                        String taskname = pod.getMetadata().getName();
-                        for (Pair<String, List<Pair<MyVertex,MyProcessor>>> schedulepair: schedulelist) {
-                            if (pod.getMetadata().getLabels().get("nextflow.io/processName").equals(schedulepair.getValue0())) {
-                                List<Pair<MyVertex,MyProcessor>> schedule = schedulepair.getValue1();
-                                for (int p = 0; p <schedule.size(); p++) {
-                                    Pair<MyVertex,MyProcessor> pair = schedule.get(p);
-                                    if (pair.getValue0().getLabel().equals(taskname) && p == (schedule.size()-2) ){
-                                        finishtime[0] = System.currentTimeMillis();
+                                    DOTImporter<MyVertex, MyEdge> importer = new DOTImporter<>();
+                                    importer.addVertexAttributeConsumer((p, a) -> {    //adds attributes to graph
+                                        String name = p.getSecond();
+                                        MyVertex myvertex = p.getFirst();
+
+                                        Attribute attrs = a;
+                                        int zaehler;
+                                        if (name.equals("label")) {
+                                            String label = attrs.getValue();
+                                            myvertex.setLabel(attrs.getValue());
+                                            for (zaehler = 0; zaehler < listofLists.size(); zaehler++) {
+                                                List<Object> worklist = new ArrayList<>();
+                                                worklist = listofLists.get(zaehler);
+                                                String taskname = (String) worklist.get(2);
+                                                if (taskname.equals(label)) { //add workflowname
+                                                    float exp = (float) worklist.get(5);
+                                                    float var = (float) worklist.get(6);
+                                                    myvertex.setExpected(exp);
+                                                    myvertex.setVariance(var);
+                                                    myvertex.setPushed(false);
+                                                }
+                                                if (label.equals("Start") || label.equals("End")) {
+                                                    myvertex.setExpected(0);
+                                                    myvertex.setVariance(0);
+                                                    myvertex.setPushed(false);
+                                                }
+                                            }
+                                        }
+
+                                    });
+
+                                    try {
+                                        //importer.importGraph(result, new FileReader("src/main/resources/methylseq_sparse"));
+                                        //System.out.println("workflowname:"+ workflowname+ " lowercase: " +workflowname.toLowerCase());
+                                        String workflownamelowercase = workflowname.toLowerCase();
+                                        importer.importGraph(result, new FileReader("src/main/resources/" + workflownamelowercase + "_sparse.dot"));
+                                    } catch (Exception e) { //evtl work/hoegvinc davor bei src
+                                        System.out.println("Error while reading dot-File.");
                                         break;
+                                    }
+
+                                    SDLSScheduler.sblevel_calc(cluster, rawdata, result, workflowname);
+                                    Pair<Float, List<Pair<MyVertex, MyProcessor>>> results = SDLSScheduler.sdls_schedule(cluster, result);
+                                    //System.out.println(name2);
+                                    schedulelist.add(new Pair<>(workflowname, results.getValue1()));
+                                    System.out.println("Added schedule to list. Expected time: " + results.getValue0());
+                                    try {
+                                        FileWriter writer = new FileWriter("testresults.txt");
+                                        writer.write("Added schedule to list. Expected time: " + results.getValue0());
+                                        writer.close();
+                                    } catch (IOException e) {
+                                        System.out.println("An error occured during creation of Writer.");
+                                        e.printStackTrace();
+                                    }
+
+                                    for (int n = 0; n < schedulelist.size(); n++) {
+                                        Pair<String, List<Pair<MyVertex, MyProcessor>>> schedulepair = schedulelist.get(n);
+                                        if (workflowname.equals(schedulepair.getValue0())) {
+                                            List<Pair<MyVertex, MyProcessor>> schedule = schedulepair.getValue1();
+                                            for (int o = 0; o < schedule.size(); o++) {
+                                                if (Objects.equals(pod.getMetadata().getName(), schedule.get(o).getValue0().getLabel())) {
+                                                    String nodename = schedule.get(o).getValue1().getProcname();
+                                                    Node currnode = findNode(nodeList, nodename);
+                                                    Pair<Pod, Node> currpair = K8Helper.bindPodToNode(pod, currnode, -1.0);
+                                                    System.out.println("Scheduled: " + currpair.getValue0().getMetadata().getLabels() + " to " + currnode.getMetadata().getName());
+                                                    //pod.getSpec().setNodeName(nodename);
+                                                    break;
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                    break;
+                                }
+                            }
+                            break;
+                        case MODIFIED:
+                            break;
+                        case DELETED:
+                            logger.info("[" + pod.getSpec().getContainers().get(0).getName() + "] - " + "Pod deleted: " + pod.getMetadata().getName());
+                            String taskname = pod.getMetadata().getName();
+                            for (Pair<String, List<Pair<MyVertex, MyProcessor>>> schedulepair : schedulelist) {
+                                if (pod.getMetadata().getLabels().get("nextflow.io/processName").equals(schedulepair.getValue0())) {
+                                    List<Pair<MyVertex, MyProcessor>> schedule = schedulepair.getValue1();
+                                    for (int p = 0; p < schedule.size(); p++) {
+                                        Pair<MyVertex, MyProcessor> pair = schedule.get(p);
+                                        if (pair.getValue0().getLabel().equals(taskname) && p == (schedule.size() - 2)) {
+                                            finishtime[0] = System.currentTimeMillis();
+                                            break;
+                                        }
                                     }
                                 }
                             }
-                        }
-                        long exectime = finishtime[0] - starttime[0];
-                        System.out.println("The time for the execution of the workflow is: "+ exectime);
-                        try{
-                            FileWriter writer = new FileWriter("testresults.txt");
-                            writer.write("The time for the execution of the workflow is: "+ exectime);
-                            writer.close();
-                        }catch (IOException e){
-                            System.out.println("An error occured during creation of Writer.");
-                            e.printStackTrace();
-                        }
-                        //SJFNScheduler.podList.removePodFromList(pod);
-                        //SJFNScheduler.scheduleSJFN(null);
-                        break;
+                            long exectime = finishtime[0] - starttime[0];
+                            System.out.println("The time for the execution of the workflow is: " + exectime);
+                            try {
+                                FileWriter writer = new FileWriter("testresults.txt");
+                                writer.write("The time for the execution of the workflow is: " + exectime);
+                                writer.close();
+                            } catch (IOException e) {
+                                System.out.println("An error occured during creation of Writer.");
+                                e.printStackTrace();
+                            }
+                            //SJFNScheduler.podList.removePodFromList(pod);
+                            //SJFNScheduler.scheduleSJFN(null);
+                            break;
+                    }
                 }
 
             }
