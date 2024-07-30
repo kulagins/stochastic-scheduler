@@ -8,4 +8,4 @@ spec:
   capacity:
     storage: 10Gi
   hostPath:
-    path: /home/kulagins/workspace/tarema-k8-scheduler/host-folder
+    path: /home/panda/project/fondafolder
