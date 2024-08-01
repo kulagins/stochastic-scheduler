@@ -17,6 +17,9 @@ public class MyVertex {
 
         public float completiontimevar;
 
+        public MyVertex(){
+
+        }
         public MyVertex(String name){
                 this.label = name;
         }

@@ -240,8 +240,9 @@ public class CurrentPodNodeStatus {
                                         //importer.importGraph(result, new FileReader("src/main/resources/methylseq_sparse"));
                                         //System.out.println("workflowname:"+ workflowname+ " lowercase: " +workflowname.toLowerCase());
                                         String workflownamelowercase = workflowname.toLowerCase();
-                                        importer.importGraph(result, new FileReader("src/main/resources/" + workflownamelowercase + "_sparse.dot"));
+                                        importer.importGraph(result, new FileReader("src/main/resources/"+workflownamelowercase+"_sparse.dot"));
                                     } catch (Exception e) { //evtl work/hoegvinc davor bei src
+                                        System.out.println("workflowname:"+ workflowname.toLowerCase());
                                         System.out.println("Error while reading dot-File.");
                                         break;
                                     }
@@ -303,6 +304,8 @@ public class CurrentPodNodeStatus {
                             try {
                                 FileWriter writer = new FileWriter("testresults.txt");
                                 writer.write("The time for the execution of the workflow is: " + exectime);
+                                writer.write("Starttime: "+ starttime[0]);
+                                writer.write("Finishtime: "+finishtime[0]);
                                 writer.close();
                             } catch (IOException e) {
                                 System.out.println("An error occured during creation of Writer.");

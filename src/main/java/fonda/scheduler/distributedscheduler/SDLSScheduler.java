@@ -277,6 +277,7 @@ public class SDLSScheduler {
         tasklist.remove(root);
         int i = 0;
         while(!tasklist.isEmpty()) {
+            if (i != revtoplist.size()){
             Set<MyEdge> edgelist = graph.incomingEdgesOf(revtoplist.get(i));
             for (MyEdge edge : edgelist){
                 MyVertex source = graph.getEdgeSource(edge);
@@ -284,6 +285,10 @@ public class SDLSScheduler {
                 tasklist.remove(source);
             }
             i++;
+            }else {
+                break;
+            }
+
         }
         return revtoplist;
     }

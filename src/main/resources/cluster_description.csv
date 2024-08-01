@@ -1,2 +1,4 @@
 Machine,Amount,CPU,Memory,Storage,CPU_events,LINPACK,RAM_score,read_IOPS,write_IOPS
-kind-control-plane,36,30,3,HDD,458,3959800,18700,414,415
+hu-worker-c23,1,32,3,HDD,458,3959800,18700,414,415
+hu-worker-c37,1,32,3,HDD,460,343043,18700,414,415
+hu-worker-c38,1,32,3,HDD,458,3959800,18700,414,415

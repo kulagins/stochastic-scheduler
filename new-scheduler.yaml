@@ -30,6 +30,34 @@ roleRef:
   name: system:volume-scheduler
   apiGroup: rbac.authorization.k8s.io
 ---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: new-scheduler-extension-apiserver-authentication-reader
+  name-space: kube-system
+roleRef:
+  kind: Role
+  name: extension-apiserver-authentication-reader
+  apiGroup: rbac.authorization.k8s.io
+subjects:
+- kind: ServiceAccount
+  name: new-scheduler
+  namespace: kube-system
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: new-scheduler-config
+  namespace: kube-system
+data:
+  my-scheduler-config.yaml: |
+    apiVersion: kubescheduler.config.k8s.io/v1beta2
+    kind: KubeSchedulerConfiguration
+    profiles:
+      - schedulerName: new-scheduler
+    LeaderElection:
+      LeaderEffect: false
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -55,10 +83,8 @@ spec:
       containers:
         - command:
             - /usr/local/bin/kube-scheduler
-            - --address=0.0.0.0
-            - --leader-elect=false
-            - --scheduler-name=new-scheduler
-          image: was1docker/new-scheduler:2
+            - --config=/etc/kubernetes/new-scheduler/new-scheduler-config.yaml
+          image: vinc747/new-scheduler:1.0
           livenessProbe:
             httpGet:
               path: /healthz
@@ -74,7 +100,12 @@ spec:
               cpu: '0.1'
           securityContext:
             privileged: false
-          volumeMounts: []
+          volumeMounts:
+            - name: config-volume
+              mountPath: /etc/kubernetes/new-scheduler
       hostNetwork: false
       hostPID: false
-      volumes: []
+      volumes:
+        - name: config-volume
+          configMap:
+            name: new-scheduler-config
