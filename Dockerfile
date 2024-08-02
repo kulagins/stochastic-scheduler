@@ -10,5 +10,6 @@ FROM openjdk:11-jre-slim
 #COPY target/kube-scheduler-1.0-SNAPSHOT.jar /usr/local/lib/kube-scheduler.jar
 COPY --from=build ./build/target/kube-scheduler-1.0-SNAPSHOT.jar /usr/local/lib/kube-scheduler.jar
 RUN chmod +x /usr/local/lib/kube-scheduler.jar
+RUN java -jar /usr/local/lib/kube-scheduler.jar
 EXPOSE 8080
 ENTRYPOINT ["java","-jar","/usr/local/lib/kube-scheduler.jar"]
