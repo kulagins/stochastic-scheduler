@@ -82,7 +82,7 @@ spec:
       serviceAccountName: new-scheduler
       containers:
         - command:
-            - /home/panda/project/stochastic-scheduler
+            - Users/Vinc/Documents/GitHub/stochastic-scheduler
             - --config=/etc/kubernetes/new-scheduler/new-scheduler-config.yaml
           image: vinc747/newscheduler:1.0
           livenessProbe:
