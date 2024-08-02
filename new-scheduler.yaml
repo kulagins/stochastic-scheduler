@@ -82,7 +82,7 @@ spec:
       serviceAccountName: new-scheduler
       containers:
         - command:
-            - /usr/local/bin/kube-scheduler
+            - /usr/local/lib/kube-scheduler
             - --config=/etc/kubernetes/new-scheduler/new-scheduler-config.yaml
           image: vinc747/newscheduler:1.0
           livenessProbe:
