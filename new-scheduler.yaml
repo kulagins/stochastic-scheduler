@@ -82,7 +82,7 @@ spec:
       serviceAccountName: new-scheduler
       containers:
         - command:
-          - --config=configmap/new-scheduler-config/new-scheduler-config.yaml
+          #- --config=configmap/new-scheduler-config/new-scheduler-config.yaml
           image: vinc747/newscheduler:1.2
           livenessProbe:
             httpGet:
