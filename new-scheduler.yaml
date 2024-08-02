@@ -50,7 +50,7 @@ metadata:
   name: new-scheduler-config
   namespace: kube-system
 data:
-  my-scheduler-config.yaml: |
+  new-scheduler-config.yaml: |
     apiVersion: kubescheduler.config.k8s.io/v1beta2
     kind: KubeSchedulerConfiguration
     profiles:
