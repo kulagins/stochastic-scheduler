@@ -82,18 +82,20 @@ spec:
       serviceAccountName: new-scheduler
       containers:
         - command:
-          # - --config=/etc/kubernetes/new-scheduler/new-scheduler-config.yaml
+          - --config=/etc/new-scheduler/new-scheduler-config.yaml
           image: vinc747/newscheduler:1.2
           livenessProbe:
             httpGet:
               path: /healthz
-              port: 10251
+              port: 10259
+              scheme: HTTPS
             initialDelaySeconds: 15
           name: kube-second-scheduler
           readinessProbe:
             httpGet:
               path: /healthz
-              port: 10251
+              port: 10259
+              scheme: HTTPS
           resources:
             requests:
               cpu: '0.1'
@@ -101,7 +103,7 @@ spec:
             privileged: false
           volumeMounts:
             - name: config-volume
-              mountPath: /etc/kubernetes/new-scheduler
+              mountPath: /etc/new-scheduler
       hostNetwork: false
       hostPID: false
       volumes:
