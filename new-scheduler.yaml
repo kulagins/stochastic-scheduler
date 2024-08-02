@@ -84,7 +84,7 @@ spec:
         - command:
             - /usr/local/lib/kube-scheduler.jar
             - --config=/etc/kubernetes/new-scheduler/new-scheduler-config.yaml
-          image: vinc747/newscheduler:1.0
+          image: vinc747/newscheduler:1.1
           livenessProbe:
             httpGet:
               path: /healthz
