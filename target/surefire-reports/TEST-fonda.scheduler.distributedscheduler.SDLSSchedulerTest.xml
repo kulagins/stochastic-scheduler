@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report-3.0.xsd" version="3.0" name="fonda.scheduler.distributedscheduler.SDLSSchedulerTest" time="0.397" tests="19" errors="0" skipped="0" failures="0">
+  <properties>
+    <property name="awt.toolkit" value="sun.awt.X11.XToolkit"/>
+    <property name="java.specification.version" value="11"/>
+    <property name="sun.cpu.isalist" value=""/>
+    <property name="sun.jnu.encoding" value="UTF-8"/>
+    <property name="java.class.path" value="/home/panda/project/stochastic-scheduler/target/test-classes:/home/panda/project/stochastic-scheduler/target/classes:/home/panda/.m2/repository/io/fabric8/kubernetes-client/5.0.0/kubernetes-client-5.0.0.jar:/home/panda/.m2/repository/io/fabric8/kubernetes-model-core/5.0.0/kubernetes-model-core-5.0.0.jar:/home/panda/.m2/repository/io/fabric8/kubernetes-model-common/5.0.0/kubernetes-model-common-5.0.0.jar:/home/panda/.m2/repository/com/fasterxml/jackson/module/jackson-module-jaxb-annotations/2.11.2/jackson-module-jaxb-annotations-2.11.2.jar:/home/panda/.m2/repository/jakarta/xml/bind/jakarta.xml.bind-api/2.3.2/jakarta.xml.bind-api-2.3.2.jar:/home/panda/.m2/repository/jakarta/activation/jakarta.activation-api/1.2.1/jakarta.activation-api-1.2.1.jar:/home/panda/.m2/repository/javax/annotation/javax.annotation-api/1.3.2/javax.annotation-api-1.3.2.jar:/home/panda/.m2/repository/javax/xml/bind/jaxb-api/2.3.0/jaxb-api-2.3.0.jar:/home/panda/.m2/repository/io/fabric8/kubernetes-model-rbac/5.0.0/kubernetes-model-rbac-5.0.0.jar:/home/panda/.m2/repository/io/fabric8/kubernetes-model-admissionregistration/5.0.0/kubernetes-model-admissionregistration-5.0.0.jar:/home/panda/.m2/repository/io/fabric8/kubernetes-model-apps/5.0.0/kubernetes-model-apps-5.0.0.jar:/home/panda/.m2/repository/io/fabric8/kubernetes-model-autoscaling/5.0.0/kubernetes-model-autoscaling-5.0.0.jar:/home/panda/.m2/repository/io/fabric8/kubernetes-model-apiextensions/5.0.0/kubernetes-model-apiextensions-5.0.0.jar:/home/panda/.m2/repository/io/fabric8/kubernetes-model-batch/5.0.0/kubernetes-model-batch-5.0.0.jar:/home/panda/.m2/repository/io/fabric8/kubernetes-model-certificates/5.0.0/kubernetes-model-certificates-5.0.0.jar:/home/panda/.m2/repository/io/fabric8/kubernetes-model-coordination/5.0.0/kubernetes-model-coordination-5.0.0.jar:/home/panda/.m2/repository/io/fabric8/kubernetes-model-discovery/5.0.0/kubernetes-model-discovery-5.0.0.jar:/home/panda/.m2/repository/io/fabric8/kubernetes-model-events/5.0.0/kubernetes-model-events-5.0.0.jar:/home/panda/.m2/repository/io/fabric8/kubernetes-model-extensions/5.0.0/kubernetes-model-extensions-5.0.0.jar:/home/panda/.m2/repository/io/fabric8/kubernetes-model-networking/5.0.0/kubernetes-model-networking-5.0.0.jar:/home/panda/.m2/repository/io/fabric8/kubernetes-model-metrics/5.0.0/kubernetes-model-metrics-5.0.0.jar:/home/panda/.m2/repository/io/fabric8/kubernetes-model-policy/5.0.0/kubernetes-model-policy-5.0.0.jar:/home/panda/.m2/repository/io/fabric8/kubernetes-model-scheduling/5.0.0/kubernetes-model-scheduling-5.0.0.jar:/home/panda/.m2/repository/io/fabric8/kubernetes-model-settings/5.0.0/kubernetes-model-settings-5.0.0.jar:/home/panda/.m2/repository/io/fabric8/kubernetes-model-storageclass/5.0.0/kubernetes-model-storageclass-5.0.0.jar:/home/panda/.m2/repository/io/fabric8/kubernetes-model-node/5.0.0/kubernetes-model-node-5.0.0.jar:/home/panda/.m2/repository/com/squareup/okhttp3/okhttp/3.12.12/okhttp-3.12.12.jar:/home/panda/.m2/repository/com/squareup/okio/okio/1.15.0/okio-1.15.0.jar:/home/panda/.m2/repository/com/squareup/okhttp3/logging-interceptor/3.12.12/logging-interceptor-3.12.12.jar:/home/panda/.m2/repository/org/slf4j/slf4j-api/1.7.30/slf4j-api-1.7.30.jar:/home/panda/.m2/repository/com/fasterxml/jackson/dataformat/jackson-dataformat-yaml/2.11.2/jackson-dataformat-yaml-2.11.2.jar:/home/panda/.m2/repository/org/yaml/snakeyaml/1.26/snakeyaml-1.26.jar:/home/panda/.m2/repository/com/fasterxml/jackson/datatype/jackson-datatype-jsr310/2.11.2/jackson-datatype-jsr310-2.11.2.jar:/home/panda/.m2/repository/com/fasterxml/jackson/core/jackson-annotations/2.11.2/jackson-annotations-2.11.2.jar:/home/panda/.m2/repository/com/fasterxml/jackson/core/jackson-databind/2.11.2/jackson-databind-2.11.2.jar:/home/panda/.m2/repository/com/fasterxml/jackson/core/jackson-core/2.11.2/jackson-core-2.11.2.jar:/home/panda/.m2/repository/io/fabric8/zjsonpatch/0.3.0/zjsonpatch-0.3.0.jar:/home/panda/.m2/repository/com/github/mifmif/generex/1.0.2/generex-1.0.2.jar:/home/panda/.m2/repository/dk/brics/automaton/automaton/1.11-8/automaton-1.11-8.jar:/home/panda/.m2/repository/org/jgrapht/jgrapht-io/1.5.2/jgrapht-io-1.5.2.jar:/home/panda/.m2/repository/org/jgrapht/jgrapht-core/1.5.2/jgrapht-core-1.5.2.jar:/home/panda/.m2/repository/org/jheaps/jheaps/0.14/jheaps-0.14.jar:/home/panda/.m2/repository/org/apfloat/apfloat/1.10.1/apfloat-1.10.1.jar:/home/panda/.m2/repository/org/antlr/antlr4-runtime/4.12.0/antlr4-runtime-4.12.0.jar:/home/panda/.m2/repository/org/apache/commons/commons-text/1.10.0/commons-text-1.10.0.jar:/home/panda/.m2/repository/org/apache/commons/commons-lang3/3.12.0/commons-lang3-3.12.0.jar:/home/panda/.m2/repository/org/javatuples/javatuples/1.2/javatuples-1.2.jar:/home/panda/.m2/repository/org/postgresql/postgresql/42.2.18/postgresql-42.2.18.jar:/home/panda/.m2/repository/org/checkerframework/checker-qual/3.5.0/checker-qual-3.5.0.jar:/home/panda/.m2/repository/com/zaxxer/HikariCP/3.4.5/HikariCP-3.4.5.jar:/home/panda/.m2/repository/org/projectlombok/lombok/1.18.30/lombok-1.18.30.jar:/home/panda/.m2/repository/junit/junit/4.11/junit-4.11.jar:/home/panda/.m2/repository/org/hamcrest/hamcrest-core/1.3/hamcrest-core-1.3.jar:/home/panda/.m2/repository/org/mockito/mockito-inline/3.4.4/mockito-inline-3.4.4.jar:/home/panda/.m2/repository/org/mockito/mockito-core/3.4.4/mockito-core-3.4.4.jar:/home/panda/.m2/repository/net/bytebuddy/byte-buddy/1.10.13/byte-buddy-1.10.13.jar:/home/panda/.m2/repository/net/bytebuddy/byte-buddy-agent/1.10.13/byte-buddy-agent-1.10.13.jar:/home/panda/.m2/repository/org/objenesis/objenesis/2.6/objenesis-2.6.jar:/home/panda/.m2/repository/ch/qos/logback/logback-classic/1.2.3/logback-classic-1.2.3.jar:/home/panda/.m2/repository/ch/qos/logback/logback-core/1.2.3/logback-core-1.2.3.jar:/home/panda/.m2/repository/org/junit/jupiter/junit-jupiter/5.11.0-M2/junit-jupiter-5.11.0-M2.jar:/home/panda/.m2/repository/org/junit/jupiter/junit-jupiter-api/5.11.0-M2/junit-jupiter-api-5.11.0-M2.jar:/home/panda/.m2/repository/org/opentest4j/opentest4j/1.3.0/opentest4j-1.3.0.jar:/home/panda/.m2/repository/org/junit/platform/junit-platform-commons/1.11.0-M2/junit-platform-commons-1.11.0-M2.jar:/home/panda/.m2/repository/org/apiguardian/apiguardian-api/1.1.2/apiguardian-api-1.1.2.jar:/home/panda/.m2/repository/org/junit/jupiter/junit-jupiter-params/5.11.0-M2/junit-jupiter-params-5.11.0-M2.jar:/home/panda/.m2/repository/org/junit/jupiter/junit-jupiter-engine/5.11.0-M2/junit-jupiter-engine-5.11.0-M2.jar:/home/panda/.m2/repository/org/junit/platform/junit-platform-engine/1.11.0-M2/junit-platform-engine-1.11.0-M2.jar:/home/panda/.m2/repository/org/apache/commons/commons-math3/3.6.1/commons-math3-3.6.1.jar:"/>
+    <property name="java.vm.vendor" value="Ubuntu"/>
+    <property name="sun.arch.data.model" value="64"/>
+    <property name="java.vendor.url" value="https://ubuntu.com/"/>
+    <property name="user.timezone" value=""/>
+    <property name="java.vm.specification.version" value="11"/>
+    <property name="os.name" value="Linux"/>
+    <property name="sun.java.launcher" value="SUN_STANDARD"/>
+    <property name="sun.boot.library.path" value="/usr/lib/jvm/java-11-openjdk-amd64/lib"/>
+    <property name="sun.java.command" value="/home/panda/project/stochastic-scheduler/target/surefire/surefirebooter-20240726122343022_3.jar /home/panda/project/stochastic-scheduler/target/surefire 2024-07-26T12-23-42_143-jvmRun1 surefire-20240726122343022_1tmp surefire_0-20240726122343022_2tmp"/>
+    <property name="jdk.debug" value="release"/>
+    <property name="surefire.test.class.path" value="/home/panda/project/stochastic-scheduler/target/test-classes:/home/panda/project/stochastic-scheduler/target/classes:/home/panda/.m2/repository/io/fabric8/kubernetes-client/5.0.0/kubernetes-client-5.0.0.jar:/home/panda/.m2/repository/io/fabric8/kubernetes-model-core/5.0.0/kubernetes-model-core-5.0.0.jar:/home/panda/.m2/repository/io/fabric8/kubernetes-model-common/5.0.0/kubernetes-model-common-5.0.0.jar:/home/panda/.m2/repository/com/fasterxml/jackson/module/jackson-module-jaxb-annotations/2.11.2/jackson-module-jaxb-annotations-2.11.2.jar:/home/panda/.m2/repository/jakarta/xml/bind/jakarta.xml.bind-api/2.3.2/jakarta.xml.bind-api-2.3.2.jar:/home/panda/.m2/repository/jakarta/activation/jakarta.activation-api/1.2.1/jakarta.activation-api-1.2.1.jar:/home/panda/.m2/repository/javax/annotation/javax.annotation-api/1.3.2/javax.annotation-api-1.3.2.jar:/home/panda/.m2/repository/javax/xml/bind/jaxb-api/2.3.0/jaxb-api-2.3.0.jar:/home/panda/.m2/repository/io/fabric8/kubernetes-model-rbac/5.0.0/kubernetes-model-rbac-5.0.0.jar:/home/panda/.m2/repository/io/fabric8/kubernetes-model-admissionregistration/5.0.0/kubernetes-model-admissionregistration-5.0.0.jar:/home/panda/.m2/repository/io/fabric8/kubernetes-model-apps/5.0.0/kubernetes-model-apps-5.0.0.jar:/home/panda/.m2/repository/io/fabric8/kubernetes-model-autoscaling/5.0.0/kubernetes-model-autoscaling-5.0.0.jar:/home/panda/.m2/repository/io/fabric8/kubernetes-model-apiextensions/5.0.0/kubernetes-model-apiextensions-5.0.0.jar:/home/panda/.m2/repository/io/fabric8/kubernetes-model-batch/5.0.0/kubernetes-model-batch-5.0.0.jar:/home/panda/.m2/repository/io/fabric8/kubernetes-model-certificates/5.0.0/kubernetes-model-certificates-5.0.0.jar:/home/panda/.m2/repository/io/fabric8/kubernetes-model-coordination/5.0.0/kubernetes-model-coordination-5.0.0.jar:/home/panda/.m2/repository/io/fabric8/kubernetes-model-discovery/5.0.0/kubernetes-model-discovery-5.0.0.jar:/home/panda/.m2/repository/io/fabric8/kubernetes-model-events/5.0.0/kubernetes-model-events-5.0.0.jar:/home/panda/.m2/repository/io/fabric8/kubernetes-model-extensions/5.0.0/kubernetes-model-extensions-5.0.0.jar:/home/panda/.m2/repository/io/fabric8/kubernetes-model-networking/5.0.0/kubernetes-model-networking-5.0.0.jar:/home/panda/.m2/repository/io/fabric8/kubernetes-model-metrics/5.0.0/kubernetes-model-metrics-5.0.0.jar:/home/panda/.m2/repository/io/fabric8/kubernetes-model-policy/5.0.0/kubernetes-model-policy-5.0.0.jar:/home/panda/.m2/repository/io/fabric8/kubernetes-model-scheduling/5.0.0/kubernetes-model-scheduling-5.0.0.jar:/home/panda/.m2/repository/io/fabric8/kubernetes-model-settings/5.0.0/kubernetes-model-settings-5.0.0.jar:/home/panda/.m2/repository/io/fabric8/kubernetes-model-storageclass/5.0.0/kubernetes-model-storageclass-5.0.0.jar:/home/panda/.m2/repository/io/fabric8/kubernetes-model-node/5.0.0/kubernetes-model-node-5.0.0.jar:/home/panda/.m2/repository/com/squareup/okhttp3/okhttp/3.12.12/okhttp-3.12.12.jar:/home/panda/.m2/repository/com/squareup/okio/okio/1.15.0/okio-1.15.0.jar:/home/panda/.m2/repository/com/squareup/okhttp3/logging-interceptor/3.12.12/logging-interceptor-3.12.12.jar:/home/panda/.m2/repository/org/slf4j/slf4j-api/1.7.30/slf4j-api-1.7.30.jar:/home/panda/.m2/repository/com/fasterxml/jackson/dataformat/jackson-dataformat-yaml/2.11.2/jackson-dataformat-yaml-2.11.2.jar:/home/panda/.m2/repository/org/yaml/snakeyaml/1.26/snakeyaml-1.26.jar:/home/panda/.m2/repository/com/fasterxml/jackson/datatype/jackson-datatype-jsr310/2.11.2/jackson-datatype-jsr310-2.11.2.jar:/home/panda/.m2/repository/com/fasterxml/jackson/core/jackson-annotations/2.11.2/jackson-annotations-2.11.2.jar:/home/panda/.m2/repository/com/fasterxml/jackson/core/jackson-databind/2.11.2/jackson-databind-2.11.2.jar:/home/panda/.m2/repository/com/fasterxml/jackson/core/jackson-core/2.11.2/jackson-core-2.11.2.jar:/home/panda/.m2/repository/io/fabric8/zjsonpatch/0.3.0/zjsonpatch-0.3.0.jar:/home/panda/.m2/repository/com/github/mifmif/generex/1.0.2/generex-1.0.2.jar:/home/panda/.m2/repository/dk/brics/automaton/automaton/1.11-8/automaton-1.11-8.jar:/home/panda/.m2/repository/org/jgrapht/jgrapht-io/1.5.2/jgrapht-io-1.5.2.jar:/home/panda/.m2/repository/org/jgrapht/jgrapht-core/1.5.2/jgrapht-core-1.5.2.jar:/home/panda/.m2/repository/org/jheaps/jheaps/0.14/jheaps-0.14.jar:/home/panda/.m2/repository/org/apfloat/apfloat/1.10.1/apfloat-1.10.1.jar:/home/panda/.m2/repository/org/antlr/antlr4-runtime/4.12.0/antlr4-runtime-4.12.0.jar:/home/panda/.m2/repository/org/apache/commons/commons-text/1.10.0/commons-text-1.10.0.jar:/home/panda/.m2/repository/org/apache/commons/commons-lang3/3.12.0/commons-lang3-3.12.0.jar:/home/panda/.m2/repository/org/javatuples/javatuples/1.2/javatuples-1.2.jar:/home/panda/.m2/repository/org/postgresql/postgresql/42.2.18/postgresql-42.2.18.jar:/home/panda/.m2/repository/org/checkerframework/checker-qual/3.5.0/checker-qual-3.5.0.jar:/home/panda/.m2/repository/com/zaxxer/HikariCP/3.4.5/HikariCP-3.4.5.jar:/home/panda/.m2/repository/org/projectlombok/lombok/1.18.30/lombok-1.18.30.jar:/home/panda/.m2/repository/junit/junit/4.11/junit-4.11.jar:/home/panda/.m2/repository/org/hamcrest/hamcrest-core/1.3/hamcrest-core-1.3.jar:/home/panda/.m2/repository/org/mockito/mockito-inline/3.4.4/mockito-inline-3.4.4.jar:/home/panda/.m2/repository/org/mockito/mockito-core/3.4.4/mockito-core-3.4.4.jar:/home/panda/.m2/repository/net/bytebuddy/byte-buddy/1.10.13/byte-buddy-1.10.13.jar:/home/panda/.m2/repository/net/bytebuddy/byte-buddy-agent/1.10.13/byte-buddy-agent-1.10.13.jar:/home/panda/.m2/repository/org/objenesis/objenesis/2.6/objenesis-2.6.jar:/home/panda/.m2/repository/ch/qos/logback/logback-classic/1.2.3/logback-classic-1.2.3.jar:/home/panda/.m2/repository/ch/qos/logback/logback-core/1.2.3/logback-core-1.2.3.jar:/home/panda/.m2/repository/org/junit/jupiter/junit-jupiter/5.11.0-M2/junit-jupiter-5.11.0-M2.jar:/home/panda/.m2/repository/org/junit/jupiter/junit-jupiter-api/5.11.0-M2/junit-jupiter-api-5.11.0-M2.jar:/home/panda/.m2/repository/org/opentest4j/opentest4j/1.3.0/opentest4j-1.3.0.jar:/home/panda/.m2/repository/org/junit/platform/junit-platform-commons/1.11.0-M2/junit-platform-commons-1.11.0-M2.jar:/home/panda/.m2/repository/org/apiguardian/apiguardian-api/1.1.2/apiguardian-api-1.1.2.jar:/home/panda/.m2/repository/org/junit/jupiter/junit-jupiter-params/5.11.0-M2/junit-jupiter-params-5.11.0-M2.jar:/home/panda/.m2/repository/org/junit/jupiter/junit-jupiter-engine/5.11.0-M2/junit-jupiter-engine-5.11.0-M2.jar:/home/panda/.m2/repository/org/junit/platform/junit-platform-engine/1.11.0-M2/junit-platform-engine-1.11.0-M2.jar:/home/panda/.m2/repository/org/apache/commons/commons-math3/3.6.1/commons-math3-3.6.1.jar:"/>
+    <property name="sun.cpu.endian" value="little"/>
+    <property name="user.home" value="/home/panda"/>
+    <property name="user.language" value="en"/>
+    <property name="java.specification.vendor" value="Oracle Corporation"/>
+    <property name="java.version.date" value="2024-04-16"/>
+    <property name="java.home" value="/usr/lib/jvm/java-11-openjdk-amd64"/>
+    <property name="file.separator" value="/"/>
+    <property name="basedir" value="/home/panda/project/stochastic-scheduler"/>
+    <property name="java.vm.compressedOopsMode" value="32-bit"/>
+    <property name="line.separator" value="&#10;"/>
+    <property name="java.specification.name" value="Java Platform API Specification"/>
+    <property name="java.vm.specification.vendor" value="Oracle Corporation"/>
+    <property name="java.awt.graphicsenv" value="sun.awt.X11GraphicsEnvironment"/>
+    <property name="surefire.real.class.path" value="/home/panda/project/stochastic-scheduler/target/surefire/surefirebooter-20240726122343022_3.jar"/>
+    <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/>
+    <property name="java.runtime.version" value="11.0.23+9-post-Ubuntu-1ubuntu122.04.1"/>
+    <property name="user.name" value="panda"/>
+    <property name="path.separator" value=":"/>
+    <property name="os.version" value="5.15.146.1-microsoft-standard-WSL2"/>
+    <property name="java.runtime.name" value="OpenJDK Runtime Environment"/>
+    <property name="file.encoding" value="UTF-8"/>
+    <property name="java.vm.name" value="OpenJDK 64-Bit Server VM"/>
+    <property name="maven.ext.class.path" value="/mnt/c/Users/Vinc/AppData/Local/JetBrains/Toolbox/apps/IDEA-C/ch-0/241.14494.240/plugins/maven/lib/maven-event-listener.jar"/>
+    <property name="localRepository" value="/home/panda/.m2/repository"/>
+    <property name="java.vendor.url.bug" value="https://bugs.launchpad.net/ubuntu/+source/openjdk-lts"/>
+    <property name="java.io.tmpdir" value="/tmp"/>
+    <property name="java.version" value="11.0.23"/>
+    <property name="user.dir" value="/home/panda/project/stochastic-scheduler"/>
+    <property name="os.arch" value="amd64"/>
+    <property name="java.vm.specification.name" value="Java Virtual Machine Specification"/>
+    <property name="java.awt.printerjob" value="sun.print.PSPrinterJob"/>
+    <property name="sun.os.patch.level" value="unknown"/>
+    <property name="java.library.path" value="/usr/java/packages/lib:/usr/lib/x86_64-linux-gnu/jni:/lib/x86_64-linux-gnu:/usr/lib/x86_64-linux-gnu:/usr/lib/jni:/lib:/usr/lib"/>
+    <property name="java.vm.info" value="mixed mode, sharing"/>
+    <property name="java.vendor" value="Ubuntu"/>
+    <property name="java.vm.version" value="11.0.23+9-post-Ubuntu-1ubuntu122.04.1"/>
+    <property name="java.specification.maintenance.version" value="2"/>
+    <property name="sun.io.unicode.encoding" value="UnicodeLittle"/>
+    <property name="java.class.version" value="55.0"/>
+  </properties>
+  <testcase name="sblevelcalcTestedgevalues" classname="fonda.scheduler.distributedscheduler.SDLSSchedulerTest" time="0.141">
+    <system-out><![CDATA[Start sbexp: 3.0 ,  sbvar: 3.0
+vertexone sbexp: 2.0 ,  sbvar: 2.0
+Quelle: Start Ziel: vertexone
+exp: 0.0 var: 0.0
+]]></system-out>
+  </testcase>
+  <testcase name="testmaxvalues" classname="fonda.scheduler.distributedscheduler.SDLSSchedulerTest" time="0.046">
+    <system-out><![CDATA[results: 23.0 zweiter: 13.0
+]]></system-out>
+  </testcase>
+  <testcase name="sdlstestnull" classname="fonda.scheduler.distributedscheduler.SDLSSchedulerTest" time="0.014">
+    <system-out><![CDATA[results: [0.2, [[fonda.scheduler.model.MyVertex@15ca7889, fonda.scheduler.model.MyProcessor@21b2e768], [fonda.scheduler.model.MyVertex@d21a74c, fonda.scheduler.model.MyProcessor@57250572], [fonda.scheduler.model.MyVertex@7a675056, fonda.scheduler.model.MyProcessor@21b2e768], [fonda.scheduler.model.MyVertex@6e509ffa, fonda.scheduler.model.MyProcessor@21b2e768]]]
+]]></system-out>
+  </testcase>
+  <testcase name="sblevelcalcTestedgevalues2" classname="fonda.scheduler.distributedscheduler.SDLSSchedulerTest" time="0.007">
+    <system-out><![CDATA[rootvertex sbexp: 3.0 ,  sbvar: 3.0
+End sbexp: 2.0 ,  sbvar: 2.0
+Quelle: rootvertex Ziel: End
+exp: 0.0 var: 0.0
+]]></system-out>
+  </testcase>
+  <testcase name="sblevelcalcTestoneedge" classname="fonda.scheduler.distributedscheduler.SDLSSchedulerTest" time="0.008"/>
+  <testcase name="sdlstest1" classname="fonda.scheduler.distributedscheduler.SDLSSchedulerTest" time="0.002"/>
+  <testcase name="sdlstest2" classname="fonda.scheduler.distributedscheduler.SDLSSchedulerTest" time="0.006">
+    <system-out><![CDATA[MaxValues-Wrong values mistake. Take Note!
+MaxValues-Wrong values mistake. Take Note!
+makespan: 0.2
+]]></system-out>
+  </testcase>
+  <testcase name="sdlstest3" classname="fonda.scheduler.distributedscheduler.SDLSSchedulerTest" time="0.007">
+    <system-out><![CDATA[MaxValues-Wrong values mistake. Take Note!
+MaxValues-Wrong values mistake. Take Note!
+MaxValues-Wrong values mistake. Take Note!
+MaxValues-Wrong values mistake. Take Note!
+MaxValues-Wrong values mistake. Take Note!
+MaxValues-Wrong values mistake. Take Note!
+results: [1.0, [[fonda.scheduler.model.MyVertex@7c83dc97, fonda.scheduler.model.MyProcessor@65b3f4a4], [fonda.scheduler.model.MyVertex@740773a3, fonda.scheduler.model.MyProcessor@65b3f4a4], [fonda.scheduler.model.MyVertex@7748410a, fonda.scheduler.model.MyProcessor@65b3f4a4], [fonda.scheduler.model.MyVertex@37f1104d, fonda.scheduler.model.MyProcessor@65b3f4a4]]]
+]]></system-out>
+  </testcase>
+  <testcase name="sdlstest4" classname="fonda.scheduler.distributedscheduler.SDLSSchedulerTest" time="0.005">
+    <system-out><![CDATA[results: [0.06666667, [[fonda.scheduler.model.MyVertex@f2ff811, fonda.scheduler.model.MyProcessor@568ff82]]]
+]]></system-out>
+  </testcase>
+  <testcase name="sdlstest5" classname="fonda.scheduler.distributedscheduler.SDLSSchedulerTest" time="0.005">
+    <system-out><![CDATA[MaxValues-Wrong values mistake. Take Note!
+MaxValues-Wrong values mistake. Take Note!
+MaxValues-Wrong values mistake. Take Note!
+MaxValues-Wrong values mistake. Take Note!
+MaxValues-Wrong values mistake. Take Note!
+MaxValues-Wrong values mistake. Take Note!
+results: [0.20000002, [[fonda.scheduler.model.MyVertex@50caa560, fonda.scheduler.model.MyProcessor@186f8716], [fonda.scheduler.model.MyVertex@2a266d09, fonda.scheduler.model.MyProcessor@186f8716]]]
+]]></system-out>
+  </testcase>
+  <testcase name="sdlstest6" classname="fonda.scheduler.distributedscheduler.SDLSSchedulerTest" time="0.011">
+    <system-out><![CDATA[MaxValues-Wrong values mistake. Take Note!
+MaxValues-Wrong values mistake. Take Note!
+MaxValues-Wrong values mistake. Take Note!
+MaxValues-Wrong values mistake. Take Note!
+MaxValues-Wrong values mistake. Take Note!
+MaxValues-Wrong values mistake. Take Note!
+MaxValues-Wrong values mistake. Take Note!
+MaxValues-Wrong values mistake. Take Note!
+MaxValues-Wrong values mistake. Take Note!
+MaxValues-Wrong values mistake. Take Note!
+MaxValues-Wrong values mistake. Take Note!
+MaxValues-Wrong values mistake. Take Note!
+MaxValues-Wrong values mistake. Take Note!
+MaxValues-Wrong values mistake. Take Note!
+MaxValues-Wrong values mistake. Take Note!
+MaxValues-Wrong values mistake. Take Note!
+MaxValues-Wrong values mistake. Take Note!
+results: [0.53333336, [[fonda.scheduler.model.MyVertex@1d8bd0de, fonda.scheduler.model.MyProcessor@157853da], [fonda.scheduler.model.MyVertex@11c9af63, fonda.scheduler.model.MyProcessor@157853da], [fonda.scheduler.model.MyVertex@45ca843, fonda.scheduler.model.MyProcessor@71c3b41], [fonda.scheduler.model.MyVertex@757acd7b, fonda.scheduler.model.MyProcessor@157853da]]]
+]]></system-out>
+  </testcase>
+  <testcase name="sdlstest7" classname="fonda.scheduler.distributedscheduler.SDLSSchedulerTest" time="0.005">
+    <system-out><![CDATA[MaxValues-Wrong values mistake. Take Note!
+MaxValues-Wrong values mistake. Take Note!
+MaxValues-Wrong values mistake. Take Note!
+MaxValues-Wrong values mistake. Take Note!
+MaxValues-Wrong values mistake. Take Note!
+MaxValues-Wrong values mistake. Take Note!
+results: [0.20000002, [[fonda.scheduler.model.MyVertex@236e3f4e, fonda.scheduler.model.MyProcessor@dd0c991], [fonda.scheduler.model.MyVertex@3cc1435c, fonda.scheduler.model.MyProcessor@dd0c991]]]
+]]></system-out>
+  </testcase>
+  <testcase name="sdlstest8" classname="fonda.scheduler.distributedscheduler.SDLSSchedulerTest" time="0.008">
+    <system-out><![CDATA[MaxValues-Wrong values mistake. Take Note!
+MaxValues-Wrong values mistake. Take Note!
+MaxValues-Wrong values mistake. Take Note!
+MaxValues-Wrong values mistake. Take Note!
+MaxValues-Wrong values mistake. Take Note!
+MaxValues-Wrong values mistake. Take Note!
+MaxValues-Wrong values mistake. Take Note!
+MaxValues-Wrong values mistake. Take Note!
+MaxValues-Wrong values mistake. Take Note!
+MaxValues-Wrong values mistake. Take Note!
+MaxValues-Wrong values mistake. Take Note!
+MaxValues-Wrong values mistake. Take Note!
+MaxValues-Wrong values mistake. Take Note!
+MaxValues-Wrong values mistake. Take Note!
+MaxValues-Wrong values mistake. Take Note!
+MaxValues-Wrong values mistake. Take Note!
+MaxValues-Wrong values mistake. Take Note!
+results: [0.53333336, [[fonda.scheduler.model.MyVertex@5f16132a, fonda.scheduler.model.MyProcessor@55f616cf], [fonda.scheduler.model.MyVertex@36d585c, fonda.scheduler.model.MyProcessor@55f616cf], [fonda.scheduler.model.MyVertex@69fb6037, fonda.scheduler.model.MyProcessor@1356d4d4], [fonda.scheduler.model.MyVertex@87a85e1, fonda.scheduler.model.MyProcessor@55f616cf]]]
+]]></system-out>
+  </testcase>
+  <testcase name="testmaxvalues2" classname="fonda.scheduler.distributedscheduler.SDLSSchedulerTest" time="0.009">
+    <system-out><![CDATA[results: 23.0 zweiter: 7.0
+]]></system-out>
+  </testcase>
+  <testcase name="testmaxvalues3" classname="fonda.scheduler.distributedscheduler.SDLSSchedulerTest" time="0.006">
+    <system-out><![CDATA[results: 0.5 zweiter: 0.5
+]]></system-out>
+  </testcase>
+  <testcase name="testmaxvalues4" classname="fonda.scheduler.distributedscheduler.SDLSSchedulerTest" time="0.008">
+    <system-out><![CDATA[MaxValues-Wrong values mistake. Take Note!
+results: 8.4 zweiter: 4.0
+]]></system-out>
+  </testcase>
+  <testcase name="sblevelcalcTesttwodepth" classname="fonda.scheduler.distributedscheduler.SDLSSchedulerTest" time="0.012">
+    <system-out><![CDATA[MaxValues-Wrong values mistake. Take Note!
+]]></system-out>
+  </testcase>
+  <testcase name="sblevelcalcTesttwodepthnull" classname="fonda.scheduler.distributedscheduler.SDLSSchedulerTest" time="0.006">
+    <system-out><![CDATA[MaxValues-Wrong values mistake. Take Note!
+root sbexp: 7.4 ,  sbvar: 3.0
+vertexone sbexp: 3.6 ,  sbvar: 2.0
+vertextwo sbexp: 5.4 ,  sbvar: 3.0
+vertexthree sbexp: 0.0 ,  sbvar: 0.0
+]]></system-out>
+  </testcase>
+  <testcase name="sblevelcalcTestroot" classname="fonda.scheduler.distributedscheduler.SDLSSchedulerTest" time="0.008"/>
+</testsuite>
