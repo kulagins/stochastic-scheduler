@@ -67,7 +67,6 @@ metadata:
   name: new-scheduler
   namespace: kube-system
 spec:
-  nodeName: hu-worker-c23
   selector:
     matchLabels:
       component: scheduler
