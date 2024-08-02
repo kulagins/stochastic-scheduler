@@ -87,14 +87,14 @@ spec:
           livenessProbe:
             httpGet:
               path: /healthz
-              port: 10259
+              port: 8080
               scheme: HTTPS
             initialDelaySeconds: 15
           name: kube-second-scheduler
           readinessProbe:
             httpGet:
               path: /healthz
-              port: 10259
+              port: 8080
               scheme: HTTPS
           resources:
             requests:
