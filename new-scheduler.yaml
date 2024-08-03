@@ -81,18 +81,20 @@ spec:
     spec:
       serviceAccountName: new-scheduler
       containers:
+        - name: kube-second-scheduler
           image: vinc747/newscheduler:1.2
           imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
           livenessProbe:
             httpGet:
-              path: /healthz
+              path: /
               port: 8080
               scheme: HTTPS
             initialDelaySeconds: 15
-          name: kube-second-scheduler
           readinessProbe:
             httpGet:
-              path: /healthz
+              path: /
               port: 8080
               scheme: HTTPS
           resources:
