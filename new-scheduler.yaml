@@ -83,7 +83,7 @@ spec:
       containers:
         - name: kube-second-scheduler
           image: vinc747/newscheduler:1.2
-          imagePullPolicy: IfnotPresent
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8080
           livenessProbe:
