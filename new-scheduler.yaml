@@ -81,9 +81,12 @@ spec:
     spec:
       serviceAccountName: new-scheduler
       containers:
-        - command:
+        #- command:
           #- --config=configmap/new-scheduler-config/new-scheduler-config.yaml
           image: vinc747/newscheduler:1.2
+          imagePullPolicy: Always
+          ports:
+            -containerPort: 8080
           livenessProbe:
             httpGet:
               path: /healthz
