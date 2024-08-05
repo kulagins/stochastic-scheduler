@@ -8,5 +8,5 @@ spec:
   resources:
     requests:
       storage: 9Gi
-  storageClassName: ""
+  storageClassName: standard
   volumeName: "pv0001"
