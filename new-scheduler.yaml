@@ -86,18 +86,18 @@ spec:
           image: vinc747/newscheduler:1.2
           imagePullPolicy: IfNotPresent
           ports:
-            - name: probeport
-              containerPort: 8080
+            - containerPort: 8080
           livenessProbe:
             httpget:
               path: /
-              port: probeport
+              port: 8080
+              scheme: http
             initialDelaySeconds: 15
           readinessProbe:
             httpget:
               path: /
-              port: probeport
-            initialDelaySeconds: 15
+              port: 8080
+              scheme: http
           resources:
             requests:
               cpu: '0.1'
