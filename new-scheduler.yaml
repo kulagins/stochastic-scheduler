@@ -79,6 +79,7 @@ spec:
         tier: control-plane
         version: second
     spec:
+      nodeName: hu-worker-c23
       serviceAccountName: new-scheduler
       containers:
         - name: kube-second-scheduler
