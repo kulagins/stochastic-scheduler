@@ -87,17 +87,14 @@ spec:
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8080
-          #livenessProbe:
-           # httpGet:
-            #  path: /
-             # port: 0
-              #scheme: HTTPS
-            #initialDelaySeconds: 150
-          #readinessProbe:
-           # httpGet:
-            #  path: /
-             # port: 0
-              #scheme: HTTPS
+          livenessProbe:
+            tcpsocket:
+              port: 8080
+            initialDelaySeconds: 15
+          readinessProbe:
+            tcpsocket:
+              port: 8080
+            initialDelaySeconds: 15
           resources:
             requests:
               cpu: '0.1'
