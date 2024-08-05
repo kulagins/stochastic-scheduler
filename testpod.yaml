@@ -4,21 +4,22 @@ metadata:
   name: ubuntu-sleep-pod
 spec:
   nodeName: hu-worker-c23
+  volumes:
+    - name: data-volume
+      persistentVolumeClaim:
+        claimName: myclaim # Use the name of your PVC here
   containers:
-  - name: ubuntu
+  - name: task-pv-container
     image: nginx
     ports:
       - containerPort: 80
         name: "http-server"
-    command: ["sleep", "3600"] # Sleep for an hour, you can adjust the time
+    #command: ["sleep", "3600"] # Sleep for an hour, you can adjust the time
     volumeMounts:
     - mountPath: "/usr/share/nginx/html"
       name: data-volume
-      subPath: html
-    - mountPath: /data # Mount path in the container
-      name: data-volume
-      subPath: data
-  volumes:
-  - name: data-volume
-    persistentVolumeClaim:
-      claimName: myclaim # Use the name of your PVC here
+     # subPath: html
+    #- mountPath: /data # Mount path in the container
+     # name: data-volume
+      #subPath: data
+
