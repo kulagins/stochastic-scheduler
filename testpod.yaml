@@ -6,7 +6,10 @@ spec:
   nodeName: hu-worker-c23
   containers:
   - name: ubuntu
-    image: ubuntu:latest
+    image: nginx
+    ports:
+      - containerPort: 80
+        name: "http-server"
     command: ["sleep", "3600"] # Sleep for an hour, you can adjust the time
     volumeMounts:
     - mountPath: "/usr/share/nginx/html"
