@@ -9,7 +9,7 @@ spec:
   capacity:
     storage: 10Gi
   hostPath:
-    path: /hoegvinc
+    path: /home/panda/project/fondafolder
   claimRef:
     namespace: hoegvinc
     name: myclaim
