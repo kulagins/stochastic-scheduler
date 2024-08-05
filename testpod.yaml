@@ -10,16 +10,16 @@ spec:
         claimName: myclaim # Use the name of your PVC here
   containers:
   - name: ubuntu
-    image: ubuntu:latest
-    #ports:
-    #  - containerPort: 80
-    #    name: "http-server"
-    command: ["sleep", "3600"] # Sleep for an hour, you can adjust the time
+    image: nginx
+    ports:
+      - containerPort: 80
+        name: "http-server"
+    #command: ["sleep", "3600"] # Sleep for an hour, you can adjust the time
     volumeMounts:
-    #- mountPath: "/usr/share/nginx/html"
-     # name: data-volume
-     # subPath: html
-    - mountPath: /data # Mount path in the container
+    - mountPath: "/usr/share/nginx/html"
       name: data-volume
+      subPath: html
+    #- mountPath: /data # Mount path in the container
+     # name: data-volume
       #subPath: data
 
