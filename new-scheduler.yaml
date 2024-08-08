@@ -31,18 +31,31 @@ roleRef:
   apiGroup: rbac.authorization.k8s.io
 ---
 apiVersion: rbac.authorization.k8s.io/v1
-kind: RoleBinding
+kind: ClusterRoleBinding
 metadata:
   name: new-scheduler-extension-apiserver-authentication-reader
-  namespace: hoegvinc
-roleRef:
-  kind: Role
-  name: extension-apiserver-authentication-reader
-  apiGroup: rbac.authorization.k8s.io
 subjects:
-- kind: ServiceAccount
-  name: new-scheduler
-  namespace: hoegvinc
+  - kind: ServiceAccount
+    name: new-scheduler
+    namespace: hoegvinc
+roleRef:
+  kind: ClusterRole
+  name: nextflowschedulerrole
+  apiGroup: rbac.authorization.k8s.io
+#---
+#apiVersion: rbac.authorization.k8s.io/v1
+#kind: RoleBinding
+#metadata:
+#  name: new-scheduler-extension-apiserver-authentication-reader
+#  namespace: hoegvinc
+#roleRef:
+#  kind: Role
+#  name: extension-apiserver-authentication-reader
+#  apiGroup: rbac.authorization.k8s.io
+#subjects:
+#- kind: ServiceAccount
+#  name: new-scheduler
+#  namespace: hoegvinc
 ---
 apiVersion: v1
 kind: ConfigMap
