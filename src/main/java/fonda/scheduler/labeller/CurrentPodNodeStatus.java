@@ -154,7 +154,37 @@ public class CurrentPodNodeStatus {
                                 if (name2 == null) {
                                     starttime[0] = System.currentTimeMillis();
                                     System.out.println("There was no processname.");
-                                    pod.getSpec().setNodeName("hu-master-c21"); //needs fixing
+                                    //pod.getSpec().setNodeName("hu-master-c23");
+                                    //Map<String,String> nodemap = new HashMap<String,String>();
+                                    //nodemap.put("usedby","hoegvinc");
+                                    //pod.getSpec().setNodeSelector(nodemap);
+
+                                    List<NodeSelectorTerm> nodeSelectorTerms = new ArrayList<>();
+                                    NodeSelectorTerm nodeSelectorTerm = new NodeSelectorTerm();
+                                    List<NodeSelectorRequirement> nodeSelectorRequirements = new ArrayList<>();
+                                    NodeSelectorRequirement nodeSelectorRequirement = new NodeSelectorRequirement();
+                                    nodeSelectorRequirement.setKey("usedby");
+                                    nodeSelectorRequirement.setOperator("equal");
+                                    List<String> selectorvalues = new ArrayList<>();
+                                    selectorvalues.add("hoegvinc");
+
+                                    nodeSelectorRequirement.setValues(selectorvalues);
+                                    nodeSelectorRequirements.add(nodeSelectorRequirement);
+
+                                    nodeSelectorTerm.setMatchExpressions(nodeSelectorRequirements);
+
+                                    nodeSelectorTerms.add(nodeSelectorTerm);
+
+                                    NodeSelector nodeselec = new NodeSelector();
+                                    nodeselec.setNodeSelectorTerms(nodeSelectorTerms);
+
+                                    NodeAffinity nodeaffi = new NodeAffinity();
+                                    nodeaffi.setRequiredDuringSchedulingIgnoredDuringExecution(nodeselec);
+                                    Affinity affi = new Affinity();
+
+                                    affi.setNodeAffinity(nodeaffi);
+                                    pod.getSpec().setAffinity(affi);
+                                    //System.out.println(pod.getSpec());//needs fixing
                                     break;
                                 }
                             } catch (Exception e) {
