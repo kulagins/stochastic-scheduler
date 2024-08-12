@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: new-scheduler
-  namespace: hoegvinc
+  namespace: kube-system
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
@@ -65,7 +65,7 @@ metadata:
     component: scheduler
     tier: control-plane
   name: new-scheduler
-  namespace: hoegvinc
+  namespace: kube-system
 spec:
   selector:
     matchLabels:
