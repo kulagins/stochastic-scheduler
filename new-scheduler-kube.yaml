@@ -1,0 +1,114 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: new-scheduler
+  namespace: kube-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: new-scheduler-as-kube-scheduler
+subjects:
+  - kind: ServiceAccount
+    name: new-scheduler
+    namespace: kube-system
+roleRef:
+  kind: ClusterRole
+  name: system:kube-scheduler
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: new-scheduler-as-volume-scheduler
+subjects:
+  - kind: ServiceAccount
+    name: new-scheduler
+    namespace: kube-system
+roleRef:
+  kind: ClusterRole
+  name: system:volume-scheduler
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: new-scheduler-extension-apiserver-authentication-reader
+  namespace: kube-system
+roleRef:
+  kind: Role
+  name: extension-apiserver-authentication-reader
+  apiGroup: rbac.authorization.k8s.io
+subjects:
+- kind: ServiceAccount
+  name: new-scheduler
+  namespace: kube-system
+---
+piVersion: v1
+kind: ConfigMap
+metadata:
+  name: new-scheduler-config
+  namespace: kube-system
+data:
+  new-scheduler-config.yaml: |
+    apiVersion: kubescheduler.config.k8s.io/v1beta2
+    kind: KubeSchedulerConfiguration
+    profiles:
+      - schedulerName: new-scheduler
+    LeaderElection:
+      LeaderEffect: false
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    component: scheduler
+    tier: control-plane
+  name: new-scheduler
+  namespace: hoegvinc
+spec:
+  selector:
+    matchLabels:
+      component: scheduler
+      tier: control-plane
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        component: scheduler
+        tier: control-plane
+        version: second
+    spec:
+      nodeName: hu-worker-c23
+      serviceAccountName: new-scheduler
+      containers:
+        - name: kube-second-scheduler
+          image: vinc747/newscheduler:1.2
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+              #livenessProbe:
+              #  httpget:
+              #   path: /
+              #  port: 8080
+              # scheme: http
+              #initialDelaySeconds: 15
+              #readinessProbe:
+              # httpget:
+              #  path: /
+              # port: 8080
+              #scheme: http
+          resources:
+            requests:
+              cpu: '0.1'
+          securityContext:
+            privileged: false
+          volumeMounts:
+            - name: config-volume
+              mountPath: /etc/new-scheduler
+      hostNetwork: false
+      hostPID: false
+      volumes:
+        - name: config-volume
+          configMap:
+            name: new-scheduler-config
