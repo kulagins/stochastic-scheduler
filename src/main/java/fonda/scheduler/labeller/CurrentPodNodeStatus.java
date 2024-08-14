@@ -164,7 +164,7 @@ public class CurrentPodNodeStatus {
                                     List<NodeSelectorRequirement> nodeSelectorRequirements = new ArrayList<>();
                                     NodeSelectorRequirement nodeSelectorRequirement = new NodeSelectorRequirement();
                                     nodeSelectorRequirement.setKey("usedby");
-                                    nodeSelectorRequirement.setOperator("equal");
+                                    nodeSelectorRequirement.setOperator("In");
                                     List<String> selectorvalues = new ArrayList<>();
                                     selectorvalues.add("hoegvinc");
 
