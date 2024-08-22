@@ -79,36 +79,32 @@ spec:
         tier: control-plane
         version: second
     spec:
-      nodeName: hu-master-c21
+      #nodeName: hu-master-c21
       serviceAccountName: new-scheduler
       containers:
-        - name: kube-second-scheduler
+        - command:
+            - /usr/local/lib/kube-scheduler.jar
+            -  --address=0.0.0.0
+            -  --leader-elect=false
+            -  --scheduler-name=new-scheduler
           image: vinc747/newscheduler:1.3
-          imagePullPolicy: IfNotPresent
-          #ports:
-          #  - containerPort: 8080
-              #livenessProbe:
-              #  httpget:
-              #   path: /
-              #  port: 8080
-              # scheme: http
-              #initialDelaySeconds: 15
-              #readinessProbe:
-              # httpget:
-              #  path: /
-              # port: 8080
-              #scheme: http
+          imagePullPolicy: Always
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 10251
+            initialDelaySeconds: 15
+          name: kube-second-scheduler
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 10251
           resources:
             requests:
               cpu: '0.1'
           securityContext:
             privileged: false
-          volumeMounts:
-            - name: config-volume
-              mountPath: /etc/new-scheduler
+          volumeMounts: []
       hostNetwork: false
       hostPID: false
-      volumes:
-        - name: config-volume
-          configMap:
-            name: new-scheduler-config
+      volumes: []
