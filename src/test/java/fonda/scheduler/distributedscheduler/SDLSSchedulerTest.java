@@ -350,25 +350,25 @@ class SDLSSchedulerTest {
 
     @Test
     void testmaxvalues(){
-        Pair<Float,Float> results = SDLSScheduler.maxValues(15,23,7,13);
+        Pair<Double,Double> results = SDLSScheduler.maxValues(15,23,7,13);
         System.out.println("results: "+ results.getValue0()+" zweiter: "+ results.getValue1());
     }
 
     @Test
     void testmaxvalues2(){
-        Pair<Float,Float> results = SDLSScheduler.maxValues(15,23,16,7);
+        Pair<Double,Double> results = SDLSScheduler.maxValues(15,23,16,7);
         System.out.println("results: "+ results.getValue0()+" zweiter: "+ results.getValue1());
     }
 
     @Test
     void testmaxvalues3(){
-        Pair<Float,Float> results = SDLSScheduler.maxValues(0.5f,0.5f,0.5f,1);
+        Pair<Double,Double> results = SDLSScheduler.maxValues(0.5f,0.5f,0.5f,1);
         System.out.println("results: "+ results.getValue0()+" zweiter: "+ results.getValue1());
     }
 
     @Test
     void testmaxvalues4(){
-        Pair<Float,Float> results = SDLSScheduler.maxValues(8.4f,6.6f,4f,3f);
+        Pair<Double,Double> results = SDLSScheduler.maxValues(8.4f,6.6f,4f,3f);
         System.out.println("results: "+ results.getValue0()+" zweiter: "+ results.getValue1());
     }
 
@@ -391,9 +391,9 @@ class SDLSSchedulerTest {
         rootvertex.setPushed(false);
         testgraphsdls1.addVertex(rootvertex);
 
-        Pair<Float, List<Pair<MyVertex,MyProcessor>>> results = SDLSScheduler.sdls_schedule(currcluster,testgraphsdls1);
-        float makespan = results.getValue0();
-        assertEquals(1/10f,makespan, "Makespan is either 1/10 or wrong.!");
+        Pair<Double, List<Pair<MyVertex,MyProcessor>>> results = SDLSScheduler.sdls_schedule(currcluster,testgraphsdls1);
+        double makespan = results.getValue0();
+        assertEquals(1/10d,makespan, "Makespan is either 1/10 or wrong.!");
         List<Pair<MyVertex,MyProcessor>> schedule = results.getValue1();
         Pair<MyVertex,MyProcessor> taskpair1 = new Pair<>(rootvertex,proc1);
         assertEquals(taskpair1,schedule.get(0),"Roottask scheduled on proc1 or wrong.");
@@ -428,8 +428,8 @@ class SDLSSchedulerTest {
         testgraphsdls2.addVertex(task1vertex);
 
         testgraphsdls2.addEdge(rootvertex,task1vertex);
-        Pair<Float, List<Pair<MyVertex,MyProcessor>>> results = SDLSScheduler.sdls_schedule(currcluster2,testgraphsdls2);
-        float makespan = results.getValue0();
+        Pair<Double, List<Pair<MyVertex,MyProcessor>>> results = SDLSScheduler.sdls_schedule(currcluster2,testgraphsdls2);
+        double makespan = results.getValue0();
         System.out.println("makespan: "+ makespan);
         //assertEquals(0.2f,makespan, "Makespan is either 1/5 or wrong.!"); // is 0.182 instead of 0.2 (maxValues)
         List<Pair<MyVertex,MyProcessor>> schedule = results.getValue1();
@@ -490,7 +490,7 @@ class SDLSSchedulerTest {
         testgraphsdls3.addEdge(rootvertex, task2vertex);
         testgraphsdls3.addEdge(task1vertex, task3vertex);
         testgraphsdls3.addEdge(task2vertex, task3vertex);
-        Pair<Float, List<Pair<MyVertex,MyProcessor>>> results = SDLSScheduler.sdls_schedule(currcluster3,testgraphsdls3);
+        Pair<Double, List<Pair<MyVertex,MyProcessor>>> results = SDLSScheduler.sdls_schedule(currcluster3,testgraphsdls3);
         System.out.println("results: " + results);
     }
 
@@ -516,7 +516,7 @@ class SDLSSchedulerTest {
         rootvertex.setSb_levelvar(1);
         rootvertex.setPushed(false);
         testgraphsdls4.addVertex(rootvertex);
-        Pair<Float, List<Pair<MyVertex,MyProcessor>>> results = SDLSScheduler.sdls_schedule(currcluster4,testgraphsdls4);
+        Pair<Double, List<Pair<MyVertex,MyProcessor>>> results = SDLSScheduler.sdls_schedule(currcluster4,testgraphsdls4);
         System.out.println("results: " + results);
     }
 
@@ -553,7 +553,7 @@ class SDLSSchedulerTest {
         testgraphsdls5.addVertex(task1vertex);
 
         testgraphsdls5.addEdge(rootvertex,task1vertex);
-        Pair<Float, List<Pair<MyVertex,MyProcessor>>> results = SDLSScheduler.sdls_schedule(currcluster5,testgraphsdls5);
+        Pair<Double, List<Pair<MyVertex,MyProcessor>>> results = SDLSScheduler.sdls_schedule(currcluster5,testgraphsdls5);
         System.out.println("results: " + results);
     }
 
@@ -611,7 +611,7 @@ class SDLSSchedulerTest {
         testgraphsdls6.addEdge(rootvertex, task2vertex);
         testgraphsdls6.addEdge(task1vertex, task3vertex);
         testgraphsdls6.addEdge(task2vertex, task3vertex);
-        Pair<Float, List<Pair<MyVertex,MyProcessor>>> results = SDLSScheduler.sdls_schedule(currcluster6,testgraphsdls6);
+        Pair<Double, List<Pair<MyVertex,MyProcessor>>> results = SDLSScheduler.sdls_schedule(currcluster6,testgraphsdls6);
         System.out.println("results: " + results);
     }
 
@@ -651,7 +651,7 @@ class SDLSSchedulerTest {
         MyEdge edge1 = testgraphsdls7.getEdge(rootvertex,task1vertex);
         edge1.setExpected(2);
         edge1.setVariance(2);
-        Pair<Float, List<Pair<MyVertex,MyProcessor>>> results = SDLSScheduler.sdls_schedule(currcluster7,testgraphsdls7);
+        Pair<Double, List<Pair<MyVertex,MyProcessor>>> results = SDLSScheduler.sdls_schedule(currcluster7,testgraphsdls7);
         System.out.println("results: " + results);
     }
 
@@ -709,7 +709,7 @@ class SDLSSchedulerTest {
         testgraphsdls8.addEdge(rootvertex, task2vertex).setExpected(10);
         testgraphsdls8.addEdge(task1vertex, task3vertex).setExpected(2);
         testgraphsdls8.addEdge(task2vertex, task3vertex).setExpected(2);
-        Pair<Float, List<Pair<MyVertex,MyProcessor>>> results = SDLSScheduler.sdls_schedule(currcluster8,testgraphsdls8);
+        Pair<Double, List<Pair<MyVertex,MyProcessor>>> results = SDLSScheduler.sdls_schedule(currcluster8,testgraphsdls8);
         System.out.println("results: " + results);
     }
 
@@ -767,7 +767,7 @@ class SDLSSchedulerTest {
         testgraphsdls8.addEdge(rootvertex, task2vertex).setExpected(0);
         testgraphsdls8.addEdge(task1vertex, task3vertex).setExpected(0);
         testgraphsdls8.addEdge(task2vertex, task3vertex).setExpected(0);
-        Pair<Float, List<Pair<MyVertex,MyProcessor>>> results = SDLSScheduler.sdls_schedule(currcluster8,testgraphsdls8);
+        Pair<Double, List<Pair<MyVertex,MyProcessor>>> results = SDLSScheduler.sdls_schedule(currcluster8,testgraphsdls8);
         System.out.println("results: " + results);
     }
 }
