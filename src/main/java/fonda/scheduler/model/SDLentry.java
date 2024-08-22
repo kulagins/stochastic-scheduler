@@ -6,15 +6,15 @@ public class SDLentry {
 
     public MyProcessor processor;
 
-    public float sdlexp;
+    public double sdlexp;
 
-    public float sdlvar;
+    public double sdlvar;
 
-    public float stexp;
+    public double stexp;
 
-    public float stvar;
+    public double stvar;
 
-    public SDLentry(MyVertex task, MyProcessor processor, float sdlexp, float sdlvar, float stexp, float stvar){
+    public SDLentry(MyVertex task, MyProcessor processor, double sdlexp, double sdlvar, double stexp, double stvar){
         this.taskname = task;
         this.processor = processor;
         this.sdlexp = sdlexp;
@@ -34,17 +34,17 @@ public class SDLentry {
     //public void setSdlexp(float sdlexp) {
     //    this.sdlexp = sdlexp;
     //}
-    public float getSdlexp(){
+    public double getSdlexp(){
         return this.sdlexp;
     }
 
     //public void setSdlvar(float sdlvar){
     //    this.sdlvar = sdlvar;
     //}
-    public float getSdlvar(){
+    public double getSdlvar(){
         return this.sdlvar;
     }
 
-    public float getStexp(){return this.stexp;}
-    public float getStvar(){return this.stvar;}
+    public double getStexp(){return this.stexp;}
+    public double getStvar(){return this.stvar;}
 }

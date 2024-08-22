@@ -9,10 +9,8 @@ import org.javatuples.Pair;
 
 //import javax.swing.*;
 //import javax.xml.crypto.Data;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -54,7 +52,8 @@ public class Main {
     public static List<MyProcessor>  readCluster(String name){
         List<MyProcessor> cluster = new ArrayList<>();
         try {
-            FileReader in = new FileReader("src/main/resources/"+name+".csv");
+            //FileReader in = new FileReader("src/main/resources/"+name+".csv");
+            InputStreamReader in = new InputStreamReader(Main.class.getResourceAsStream("/"+name+".csv"), StandardCharsets.UTF_8);
             BufferedReader br = new BufferedReader(in);
             String line;
             while ((line=br.readLine()) != null){
@@ -79,8 +78,9 @@ public class Main {
                     System.out.println("Processorspeed is not a float value. Error 205");
                     continue;
                 }
-                MyProcessor processor = new MyProcessor(machinename,cpuspeed);
+                //MyProcessor processor = new MyProcessor(machinename,cpuspeed);
                 for (int i = 0; i < amount; i++){
+                    MyProcessor processor = new MyProcessor(machinename,cpuspeed);
                     cluster.add(processor);
                 }
 
@@ -93,17 +93,18 @@ public class Main {
 
     //readin data.csv returns listoflists and rawdata-list
     public static Pair<List<List<Object>>,List<DataRow>> readIn(List<MyProcessor> cluster){
-        float cpuspeed = 0;
+        double cpuspeed = 0;
 
         List<List<Object>> listofLists = new ArrayList<>();
 
         List<DataRow> rawdata = new ArrayList<>();
-        float sum_e;
-        float expected = 0;
-        float variance = 0;
+        double sum_e;
+        double expected = 0;
+        double variance = 0;
 
         try{
-            FileReader in2 = new FileReader("src/main/resources/data.csv");
+            //FileReader in2 = new FileReader("src/main/resources/data.csv");
+            InputStreamReader in2 = new InputStreamReader(Main.class.getResourceAsStream("/data.csv"), StandardCharsets.UTF_8);
             BufferedReader br2 = new BufferedReader(in2);
             String line2;
             while((line2 = br2.readLine()) != null){
@@ -117,11 +118,11 @@ public class Main {
                 if (machine.equals("Machine") && workflow.equals("Workflow") && task.equals("Taskname")){
                     continue;
                 }
-                float TaskinputSize = 0;
+                double TaskinputSize = 0;
 
                 try {
                     if (!values[10].equals("TaskInputSize")) {
-                        TaskinputSize = Float.parseFloat(values[10]);
+                        TaskinputSize = Double.parseDouble(values[10]);
                     }
                 }catch (Exception e){
                     System.out.print("Error on Taskinputsize parsing. Error 201"+ values[10]);
@@ -146,10 +147,10 @@ public class Main {
                     }
                 }
 
-                float real = 0;
+                double real = 0;
                 try{
                     if (!values[8].equals("Real")){
-                        real = Float.parseFloat(values[8]);
+                        real = Double.parseDouble(values[8]);
                     }
                 }
                 catch(Exception e) {
@@ -157,11 +158,11 @@ public class Main {
                     break;
                 }
 
-                float rxpx = real*cpuspeed;
+                double rxpx = real*cpuspeed;
                 int runs = 1;
                 sum_e = rxpx;//when first run
 
-                float wchar = 0;
+                double wchar = 0;
                 try{
                     if (!values[13].equals("wchar")){
                         wchar = Float.parseFloat(values[13]);
@@ -206,7 +207,7 @@ public class Main {
                             cur_runs += 1;
                             workList.set(3, cur_runs);
 
-                            float k = (float) workList.get(4);
+                            double k = (double) workList.get(4);
                             k = k + rxpx;
                             workList.set(4, k);
 
@@ -243,15 +244,15 @@ public class Main {
     }
 
     //calculates the expected value of worklist-values
-    public static float calcExp(List<Object> workList ){
+    public static double calcExp(List<Object> workList ){
         if(workList == null){
             System.out.println("Worklist is null. Returned 0.");
             return 0;
         }
-        float expected;
-        float expect_sum;
+        double expected;
+        double expect_sum;
         try {
-            expect_sum = (float) workList.get(4);
+            expect_sum = (double) workList.get(4);
         }catch (NullPointerException E){
             System.out.println("Nullpointerexception in calcExp. Returned 0.");
             return 0;
@@ -265,18 +266,18 @@ public class Main {
     }
 
     //calculates the variance of worklist-values
-    public static float calcVar(List<Object> workList, List<DataRow> rawdata){
+    public static double calcVar(List<Object> workList, List<DataRow> rawdata){
         if (workList == null || rawdata == null){
             System.out.println("Worklist or rawdata is null. Returned 0.");
             return 0;
         }
-        float help;
-        float help2 = 0;//counter for runs
-        float sum_v = 0;
-        float variance;
-        float expected;
+        double help;
+        double help2 = 0;//counter for runs
+        double sum_v = 0;
+        double variance;
+        double expected;
         try{
-            expected = (float)workList.get(5);
+            expected = (double)workList.get(5);
         }catch(NullPointerException E){
             System.out.println("Expected-value is null in calcVar. Returned 0.");
             return 0;

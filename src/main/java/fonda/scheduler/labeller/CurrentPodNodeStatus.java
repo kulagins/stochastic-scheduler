@@ -20,6 +20,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -143,11 +144,10 @@ public class CurrentPodNodeStatus {
         client.pods().watch(options, new Watcher<Pod>() {
             @Override
             public void eventReceived(Action action, Pod pod) {
-                if (pod.getMetadata().getNamespace().equals("hoegvinc")) {
+                //if (pod.getMetadata().getNamespace().equals("hoegvinc")) {
                     switch (action) {
                         case ADDED:
                             logger.info("[" + pod.getSpec().getContainers().get(0).getName() + "] - " + "New Pod added to Scheduler: " + pod.getMetadata().getName());
-                            //System.out.println(pod.getMetadata().getLabels().get("nextflow.io/processName"));
                             String name2 = "";
                             try {
                                 name2 = pod.getMetadata().getLabels().get("nextflow.io/processName");
@@ -210,9 +210,11 @@ public class CurrentPodNodeStatus {
                                                     Pair<Pod, Node> currpair = K8Helper.bindPodToNode(pod, currnode, -1.0);
                                                     System.out.println("Scheduled: " + currpair.getValue0().getMetadata().getLabels() + " to " + currnode.getMetadata().getName());
                                                     try {
-                                                        FileWriter writer = new FileWriter("testresults.txt");
-                                                        writer.write("Scheduled: " + currpair.getValue0().getMetadata().getLabels() + " to " + currnode.getMetadata().getName());
-                                                        writer.close();
+                                                        FileWriter writer = new FileWriter("testresults.txt",true);
+                                                        BufferedWriter bw = new BufferedWriter(writer);
+                                                        bw.write("Scheduled: " + currpair.getValue0().getMetadata().getLabels() + " to " + currnode.getMetadata().getName());
+                                                        bw.newLine();
+                                                        bw.close();
                                                     } catch (IOException e) {
                                                         System.out.println("An error occured during creation of Writer.");
                                                         e.printStackTrace();
@@ -250,8 +252,8 @@ public class CurrentPodNodeStatus {
                                                 worklist = listofLists.get(zaehler);
                                                 String taskname = (String) worklist.get(2);
                                                 if (taskname.equals(label)) { //add workflowname
-                                                    float exp = (float) worklist.get(5);
-                                                    float var = (float) worklist.get(6);
+                                                    double exp = (double) worklist.get(5);
+                                                    double var = (double) worklist.get(6);
                                                     myvertex.setExpected(exp);
                                                     myvertex.setVariance(var);
                                                     myvertex.setPushed(false);
@@ -270,22 +272,26 @@ public class CurrentPodNodeStatus {
                                         //importer.importGraph(result, new FileReader("src/main/resources/methylseq_sparse"));
                                         //System.out.println("workflowname:"+ workflowname+ " lowercase: " +workflowname.toLowerCase());
                                         String workflownamelowercase = workflowname.toLowerCase();
-                                        importer.importGraph(result, new FileReader("src/main/resources/"+workflownamelowercase+"_sparse.dot"));
-                                    } catch (Exception e) { //evtl work/hoegvinc davor bei src
+                                        InputStreamReader in3 = new InputStreamReader(CurrentPodNodeStatus.class.getResourceAsStream("/"+workflownamelowercase+"_sparse.dot"), StandardCharsets.UTF_8);
+                                        //importer.importGraph(result, new FileReader("src/main/resources/"+workflownamelowercase+"_sparse.dot"));
+                                        importer.importGraph(result, in3);
+                                    } catch (Exception e) {
                                         System.out.println("workflowname:"+ workflowname.toLowerCase());
                                         System.out.println("Error while reading dot-File.");
                                         break;
                                     }
 
                                     SDLSScheduler.sblevel_calc(cluster, rawdata, result, workflowname);
-                                    Pair<Float, List<Pair<MyVertex, MyProcessor>>> results = SDLSScheduler.sdls_schedule(cluster, result);
-                                    //System.out.println(name2);
+                                    Pair<Double, List<Pair<MyVertex, MyProcessor>>> results = SDLSScheduler.sdls_schedule(cluster, result);
+                                    //System.out.println(cluster);
                                     schedulelist.add(new Pair<>(workflowname, results.getValue1()));
-                                    System.out.println("Added schedule to list. Expected time: " + results.getValue0());
+                                    System.out.println("Added schedule for "+workflowname+" to list. Expected time: " + results.getValue0());
                                     try {
-                                        FileWriter writer = new FileWriter("testresults.txt");
-                                        writer.write("Added schedule to list. Expected time: " + results.getValue0());
-                                        writer.close();
+                                        FileWriter writer = new FileWriter("testresults.txt", true);
+                                        BufferedWriter bw = new BufferedWriter(writer);
+                                        bw.write("Added schedule for "+workflowname+" to list. Expected time: " + results.getValue0());
+                                        bw.newLine();
+                                        bw.close();
                                     } catch (IOException e) {
                                         System.out.println("An error occured during creation of Writer.");
                                         e.printStackTrace();
@@ -322,7 +328,7 @@ public class CurrentPodNodeStatus {
                                     List<Pair<MyVertex, MyProcessor>> schedule = schedulepair.getValue1();
                                     for (int p = 0; p < schedule.size(); p++) {
                                         Pair<MyVertex, MyProcessor> pair = schedule.get(p);
-                                        if (pair.getValue0().getLabel().equals(taskname) && p == (schedule.size() - 2)) {
+                                        if (pair.getValue0().getLabel().equals(taskname) && p == (schedule.size() - 1)) {
                                             finishtime[0] = System.currentTimeMillis();
                                             break;
                                         }
@@ -332,11 +338,14 @@ public class CurrentPodNodeStatus {
                             long exectime = finishtime[0] - starttime[0];
                             System.out.println("The time for the execution of the workflow is: " + exectime);
                             try {
-                                FileWriter writer = new FileWriter("testresults.txt");
-                                writer.write("The time for the execution of the workflow is: " + exectime);
-                                writer.write("Starttime: "+ starttime[0]);
-                                writer.write("Finishtime: "+finishtime[0]);
-                                writer.close();
+                                FileWriter writer = new FileWriter("testresults.txt",true);
+                                BufferedWriter bw = new BufferedWriter(writer);
+                                bw.write("The time for the execution of the workflow is: " + exectime);
+                                bw.newLine();
+                                bw.write("Starttime: "+ starttime[0]);
+                                bw.write("Finishtime: "+finishtime[0]);
+                                bw.newLine();
+                                bw.close();
                             } catch (IOException e) {
                                 System.out.println("An error occured during creation of Writer.");
                                 e.printStackTrace();
@@ -345,7 +354,7 @@ public class CurrentPodNodeStatus {
                             //SJFNScheduler.scheduleSJFN(null);
                             break;
                     }
-                }
+                //}
 
             }
 

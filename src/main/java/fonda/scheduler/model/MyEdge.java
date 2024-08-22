@@ -4,27 +4,27 @@ import org.jgrapht.graph.DefaultEdge;
 
 public class MyEdge extends DefaultEdge {
 
-    private float expected;
+    private double expected;
 
-    private float variance;
+    private double variance;
 
     public MyEdge(){
 
     }
 
-    public void setExpected(float value){
+    public void setExpected(double value){
         this.expected = value;
     }
 
-    public float getExpected(){
+    public double getExpected(){
         return expected;
     }
 
-    public void setVariance(float value){
+    public void setVariance(double value){
         this.variance = value;
     }
 
-    public float getVariance(){
+    public double getVariance(){
         return variance;
     }
 }

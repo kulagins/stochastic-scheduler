@@ -4,17 +4,17 @@ public class MyProcessor {
 
     public String procname;
 
-    public float procspeed;
+    public double procspeed;
 
     //public float stexp;
 
     //public float stvar;
 
-    public float ftexp;
+    public double ftexp;
 
-    public float ftvar;
+    public double ftvar;
 
-    public MyProcessor(String name, float speed){
+    public MyProcessor(String name, double speed){
         this.procname = name;
         this.procspeed = speed;
         this.ftexp = 0;
@@ -31,21 +31,21 @@ public class MyProcessor {
     //public void setProcspeed(float speed){
     //    this.procspeed = speed;
     //}
-    public float getProcspeed(){
+    public double getProcspeed(){
         return procspeed;
     }
 
-    public void setFtexp(float finishexp){
+    public void setFtexp(double finishexp){
         this.ftexp = finishexp;
     }
-    public float getFtexp(){
+    public double getFtexp(){
         return ftexp;
     }
 
-    public void setFtvar(float finishvar){
+    public void setFtvar(double finishvar){
         this.ftvar = finishvar;
     }
-    public float getFtvar(){
+    public double getFtvar(){
         return ftvar;
     }
 }

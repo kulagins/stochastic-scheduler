@@ -1,6 +1,5 @@
 package fonda.scheduler.distributedscheduler;
 
-import java.text.DecimalFormat;
 import java.util.*;
 
 import fonda.scheduler.model.*;
@@ -11,7 +10,6 @@ import fonda.scheduler.model.*;
 //import org.apache.commons.math3.util.Precision;
 import org.javatuples.Pair;
 import org.jgrapht.graph.*;
-import org.apache.commons.math3.*;
 
 import static org.apache.commons.math3.special.Erf.erf;
 import static org.apache.commons.math3.special.Erf.erfInv;
@@ -60,10 +58,10 @@ public class SDLSScheduler {
         List<MyVertex> revtoplist = constructRevToplist(root,graph,tasklist);
 
         //Calc Sb-Level
-        float sb_levelexp;
-        float sb_levelvar;
+        double sb_levelexp = 0;
+        double sb_levelvar = 0;
         //Calc w(p)
-        float w_p = calcWp(cluster); //vorher calcwp(listoflists)
+        double w_p = calcWp(cluster); //vorher calcwp(listoflists)
 
         //v_exit sb_level
         if (root != null) {
@@ -77,73 +75,92 @@ public class SDLSScheduler {
         //while-loop
         while (!revtoplist.isEmpty()){
             MyVertex current_vx = revtoplist.get(0);
-            List<Float> vx_wcharlist = new ArrayList<>();
+            List<Double> vx_wcharlist = new ArrayList<>();
 
             Set<MyEdge> edgelistpar = graph.outgoingEdgesOf(current_vx);
             for(MyEdge edge : edgelistpar){
                 int counttis = 0;
-                List<Pair<String,Float>> listOfAncestors = new ArrayList<>();
+                List<Pair<String,Double>> listOfAncestors = new ArrayList<>();
                 MyVertex child = graph.getEdgeTarget(edge);
 
-                float taskinputsize_child = 0;
-                List<Float> tasksizelist = new ArrayList<>();
-                List<List<Float>> wcharlist = new ArrayList<>();
+                double taskinputsize_child = 0;
+                List<Double> tasksizelist = new ArrayList<>();
+                List<List<Double>> wcharlist = new ArrayList<>();
                 Set<MyEdge> edgelistchild = graph.incomingEdgesOf(child);
                 for(MyEdge edge2 : edgelistchild){
                     MyVertex ancestor = graph.getEdgeSource(edge2);
 
                     String name = ancestor.getLabel();
-                    float wsum = 0;
-                    List<Float> worklist2 = new ArrayList<>();
+                    double wsum = 0;
+                    List<Double> worklist2 = new ArrayList<>();
                     for (DataRow workrow : rawdata) {
-                        if (workrow.getTask().equals(child.getLabel())
-                                && workrow.getWorkflow().equals(workflow)
+
+                        if (workrow.getTask().equalsIgnoreCase(child.getLabel())
+                                && workrow.getWorkflow().equalsIgnoreCase(workflow)
                                 && counttis == 0) {
                             taskinputsize_child = taskinputsize_child + workrow.getTaskInputSize();
                             tasksizelist.add(workrow.getTaskInputSize());
+                            //System.out.println("tis-child: " + taskinputsize_child);
                         }
-                        if (workrow.getTask().equals(name)
-                                && workrow.getWorkflow().equals(workflow)) {
+                        if (workrow.getTask().equalsIgnoreCase(name)
+                                && workrow.getWorkflow().equalsIgnoreCase(workflow)) {
                             wsum = wsum + workrow.getWchar();
                             worklist2.add(workrow.getWchar());
+                            //System.out.println("wsum: "+wsum);
                         }
-                        if (workrow.getTask().equals(current_vx.getLabel())
-                                && workrow.getWorkflow().equals(workflow)) {
+                        if (workrow.getTask().equalsIgnoreCase(current_vx.getLabel())
+                                && workrow.getWorkflow().equalsIgnoreCase(workflow)) {
                             vx_wcharlist.add(workrow.getWchar());
+                            //System.out.println("vxwchar: "+ workrow.getWchar());
                         }
                     }
                     counttis++;
                     wcharlist.add(worklist2);
                     listOfAncestors.add(new Pair<>(name,wsum));
                 }
-                float wtotal = 0;
-                float w_vx = 0;
-                for (Pair<String,Float> pair : listOfAncestors){
+                double wtotal = 0;
+                double w_vx = 0;
+                for (Pair<String,Double> pair : listOfAncestors){
                     wtotal = wtotal + pair.getValue1();
                     if (current_vx.getLabel().equals(pair.getValue0())){
                         w_vx = pair.getValue1();
                     }
                 }
+                //System.out.println("wtotal:"+wtotal);
+                double wfraction = 0;
+                if (w_vx != 0 && wtotal != 0){
+                    wfraction = w_vx/wtotal;
+                }
+                /*else{
+                    System.out.println("wvx: "+ w_vx);
+                    System.out.println("wtotal: "+wtotal);
+                }*/
+                double w_connectexp = taskinputsize_child * wfraction;
 
-                float w_connectexp = taskinputsize_child * (w_vx/wtotal);
-
-                float w_connectvar;
-                float w_connectvar_sum = 0;
-                float smallestsize =  smallestSize(wcharlist,tasksizelist,vx_wcharlist);
+                double w_connectvar;
+                double w_connectvar_sum = 0;
+                double smallestsize =  smallestSize(wcharlist,tasksizelist,vx_wcharlist);
+                //System.out.println("connectexp: "+ w_connectexp);
 
                 for (int j = 0; j < smallestsize; j++){
-                    float taskinputsizework = tasksizelist.get(j);
-                    float currentvx_wchar = vx_wcharlist.get(j);
-                    float wchar_divider = 0;
+                    double taskinputsizework = tasksizelist.get(j);
+                    double currentvx_wchar = vx_wcharlist.get(j);
+                    double wchar_divider = 0;
                     for (int k = 0; k < wcharlist.size(); k++){
                         wchar_divider = wchar_divider + wcharlist.get(k).get(j);
                     }
 
-                    float help = (taskinputsizework * (currentvx_wchar/wchar_divider)) - w_connectexp;
+                    double help = (taskinputsizework * (currentvx_wchar/wchar_divider)) - w_connectexp;
 
                     w_connectvar_sum = w_connectvar_sum + (help * help);
                 }
-                w_connectvar = w_connectvar_sum/smallestsize;
+
+                if (smallestsize != 0 && w_connectvar_sum != 0){
+                    w_connectvar = w_connectvar_sum/smallestsize;
+                }else {
+                    w_connectvar = 0;
+                }
+
                 //add weights to edge
                 if (child.getLabel().equals("End") || current_vx.getLabel().equals("Start")){
                     edge.setExpected(0);
@@ -154,47 +171,21 @@ public class SDLSScheduler {
                     edge.setExpected(w_connectexp);
                     edge.setVariance(w_connectvar);
                 }
-                //
-                float child_sblevelexp = child.getSb_levelexp();
-                float child_sblevelvar = child.getSb_levelvar();
-                float sblevelexp = child_sblevelexp + w_connectexp;
+                //System.out.println("wconnect after test:"+ w_connectexp+" "+w_connectvar);
+                double child_sblevelexp = child.getSb_levelexp();
+                double child_sblevelvar = child.getSb_levelvar();
+                double sblevelexp = child_sblevelexp + w_connectexp;
 
-                float sblevelvar = child_sblevelvar + w_connectvar;
+                double sblevelvar = child_sblevelvar + w_connectvar;
                 // Comparison of sb_levels
                 if (current_vx.getSb_levelexp()== 0 && current_vx.getSb_levelvar() == 0){
                     current_vx.setSb_levelexp(sblevelexp);
 
                     current_vx.setSb_levelvar(sblevelvar);
                 }else{
-                    Pair<Float,Float> maxresult = maxValues(current_vx.getSb_levelexp(),sblevelexp,current_vx.getSb_levelvar(),sblevelvar);
+                    Pair<Double,Double> maxresult = maxValues(current_vx.getSb_levelexp(),sblevelexp,current_vx.getSb_levelvar(),sblevelvar);
                     current_vx.setSb_levelexp(maxresult.getValue0());
                     current_vx.setSb_levelvar(maxresult.getValue1());
-                    /*float diffexp1 = Math.abs(sblevelexp - maxresult.getValue0());
-                    float diffexp2 = Math.abs(current_vx.getSb_levelexp() - maxresult.getValue0());
-                    float diffvar1 = Math.abs(sblevelvar - maxresult.getValue1());
-                    float diffvar2 = Math.abs(current_vx.getSb_levelvar() - maxresult.getValue1());
-                    //System.out.println("maxvalue 1: "+ maxresult.getValue0());
-                    //System.out.println("maxvalue 2: "+ maxresult.getValue1());
-                    //System.out.println("diffexp1:"+diffexp1);
-                    //System.out.println("diffexp2:"+diffexp2);
-                    //System.out.println("diffvar1:"+diffvar1);
-                    //System.out.println("diffvar2:"+diffvar2);
-                    if (diffexp1 <= diffexp2){
-                        if(diffvar1 <= diffvar2){
-                            current_vx.setSb_levelexp(sblevelexp);
-                            current_vx.setSb_levelvar(sblevelvar);
-                        }else {
-                            current_vx.setSb_levelexp(sblevelexp);
-                            current_vx.setSb_levelvar(sblevelvar);
-                            System.out.println("MaxValues-Wrong values mistake. Take Note!");
-                        }
-                    }else{
-                        System.out.println("Nothing changes!");
-                    }*/
-                    /*
-                    if (diffexp1 < diffexp2 && diffvar2 < diffvar1 || diffexp1 > diffexp2 && diffvar1 < diffvar2){
-                        System.out.println("Error in maxValue comparison. Mixed results. Error 406.");
-                    }*/
                 }
             }
 
@@ -208,47 +199,47 @@ public class SDLSScheduler {
         }
     }
 
-    public static Pair<Float, Float> maxValues(float exp1, float exp2, float var1, float var2){
-        float resultExp;
-        float resultVar;
+    public static Pair<Double, Double> maxValues(double exp1, double exp2, double var1, double var2){
+        double resultExp;
+        double resultVar;
 
-        if (exp1 == 0f && exp2 == 0f && var1 == 0f && var2 == 0f){
-            return new Pair<>(0f,0f);
+        if (exp1 == 0d && exp2 == 0d && var1 == 0d && var2 == 0d){
+            return new Pair<>(0d,0d);
         }
         double epsilon =  Math.sqrt(var1 + var2);
         double xi = (exp1 - exp2)/epsilon;
 
         double psi = ( (1/Math.sqrt(2*Math.PI)) * Math.pow(Math.E, (- 1/2.0*(Math.pow(xi,2.0)))) );
 
-        float help = (float) (xi/Math.sqrt(2));
-        float phi = (float) ((erf(help)+1)/2);
+        double help = (double) (xi/Math.sqrt(2));
+        double phi = (double) ((erf(help)+1)/2);
 
-        float help2 = (float) (-xi/Math.sqrt(2));
-        float nphi = (float) ((erf(help2)+1)/2); //either +1/2 and no minus in front or minus in front and +1/2 check formula !!!
-        resultExp = (float) (exp2 + ( (exp1 - exp2)* phi ) + (epsilon* psi));
+        double help2 = (double) (-xi/Math.sqrt(2));
+        double nphi = (double) ((erf(help2)+1)/2); //either +1/2 and no minus in front or minus in front and +1/2 check formula !!!
+        resultExp = (double) (exp2 + ( (exp1 - exp2)* phi ) + (epsilon* psi));
 
-        resultVar = (float)(( (Math.pow(exp1,2.0) + var1)* phi)
+        resultVar = (double) (( (Math.pow(exp1,2.0) + var1)* phi)
                 + ( (Math.pow(exp2,2.0) + var2 )* nphi) //this term is added but with negativ integral result integralresult is a area under a func and should not be negativ becuz negativ area cannot exist
                 + ( (exp1 + exp2)*epsilon*psi) //thus nphi should be positiv or negativ presign of 2nd term needed !!!
                 - (Math.pow(resultExp,2.0)) );
 
-        float diffexp1 = Math.abs(exp1 - resultExp);
-        float diffexp2 = Math.abs(exp2 - resultExp);
-        float diffvar1 = Math.abs(var1 - resultVar);
-        float diffvar2 = Math.abs(var2 - resultVar);
+        double diffexp1 = Math.abs(exp1 - resultExp);
+        double diffexp2 = Math.abs(exp2 - resultExp);
+        double diffvar1 = Math.abs(var1 - resultVar);
+        double diffvar2 = Math.abs(var2 - resultVar);
 
         if (diffexp1 <= diffexp2){
             if(diffvar1 <= diffvar2){
                 return new Pair<>(exp1, var1);
             }else {
-                System.out.println("MaxValues-Wrong values mistake. Take Note!");
+                //System.out.println("MaxValues-Wrong values mistake. Take Note!");
                 return new Pair<>(exp1,var1);
             }
         }else{
             if(diffvar2 <= diffvar1){
                 return new Pair<>(exp2, var2);
             }else {
-                System.out.println("MaxValues-Wrong values mistake. Take Note!");
+                //System.out.println("MaxValues-Wrong values mistake. Take Note!");
                 return new Pair<>(exp2,var2);
             }
         }
@@ -293,37 +284,23 @@ public class SDLSScheduler {
         return revtoplist;
     }
 
-    private static float calcWp(List<MyProcessor> cluster){
-        float totalspeed = 0;
-        float amount = 0;
+    private static double calcWp(List<MyProcessor> cluster){
+        double totalspeed = 0;
+        double amount = 0;
         for(MyProcessor currproc : cluster){
-            float speed = currproc.getProcspeed();
+            double speed = currproc.getProcspeed();
             totalspeed = totalspeed + speed;
             amount++;
         }
         return totalspeed/amount;
     }
 
-    /*
-    private static float calcWp(List<List<Object>> listoflists){ //abändern so dass cluster ?!
-        List<Object> worklist = new ArrayList<Object>();
-        HashSet<Float> cpus = new HashSet<>();
-        for (List<Object> listoflist : listoflists) {
-            worklist = listoflist;
-            cpus.add((float) worklist.get(7));
-        }
-        float m = 0;
-        for (float p : cpus){
-            m = m + p;
-        }
-        return m/ cpus.size();
-    }*/
-    private static float smallestSize(List<List<Float>>wcharlist, List<Float> tasksizelist, List<Float> vx_wcharlist){
-        float smallestsize = vx_wcharlist.size();
+    private static double smallestSize(List<List<Double>>wcharlist, List<Double> tasksizelist, List<Double> vx_wcharlist){
+        double smallestsize = vx_wcharlist.size();
         if(tasksizelist.size() < smallestsize){
             smallestsize = tasksizelist.size();
         }
-        for ( List<Float> worksizelist :wcharlist){
+        for ( List<Double> worksizelist :wcharlist){
             if (worksizelist.size() < smallestsize){
                 smallestsize = worksizelist.size();
             }
@@ -331,7 +308,7 @@ public class SDLSScheduler {
         return smallestsize;
     }
 
-    public static Pair<Float,List<Pair<MyVertex,MyProcessor>>> sdls_schedule(
+    public static Pair<Double,List<Pair<MyVertex,MyProcessor>>> sdls_schedule(
             List<MyProcessor> cluster,
             //List<List<Object>> listofLists,
             DirectedAcyclicGraph<MyVertex,MyEdge> graph
@@ -343,7 +320,7 @@ public class SDLSScheduler {
         MyVertex entry = findEntry(tasklist, graph);
         taskpool.add(entry);
 
-        float w_p = calcWp(cluster); //listoflists before
+        double w_p = calcWp(cluster); //listoflists before
         List<Pair<MyVertex, MyProcessor>> schedule = new ArrayList<>();
 
         while(!taskpool.isEmpty()){
@@ -352,17 +329,18 @@ public class SDLSScheduler {
             for (MyVertex v_i :taskpool){
                 for (MyProcessor processor :cluster){
                     //calc DRT for this task-processor pair (use formula 3 from paper)
-                    Pair<Float, Float> drtvalues = getdrt(v_i, graph, schedule, processor);
+                    Pair<Double, Double> drtvalues = getdrt(v_i, graph, schedule, processor);
 
                     //calcStvalues
-                    Pair<Float, Float> stvalues = maxValues(processor.getFtexp(), drtvalues.getValue0(), processor.getFtvar(), drtvalues.getValue1());
+                    Pair<Double, Double> stvalues = maxValues(processor.getFtexp(), drtvalues.getValue0(), processor.getFtvar(), drtvalues.getValue1());
 
                     //calcSDL;
-                    Pair<Float, Float> sdlvalues = calculateSDL(v_i, processor, w_p, stvalues.getValue0(), stvalues.getValue1());
+                    Pair<Double, Double> sdlvalues = calculateSDL(v_i, processor, w_p, stvalues.getValue0(), stvalues.getValue1());
                     SDLentry sdlentry = new SDLentry(v_i, processor,sdlvalues.getValue0(), sdlvalues.getValue1(),stvalues.getValue0(),stvalues.getValue1());
                     listSDL.add(sdlentry); //check if list empty after each assign !!!?!?!
                 }
             }
+
             //Stochastic greater than every other SDL//get the task with greatest SDL;
             Pair<MyVertex,MyProcessor> taskprocpair = stochasticGreatest(listSDL);
             schedule.add(taskprocpair);// adds task-processor-pair to the schedule(our assign task to proc)
@@ -371,6 +349,15 @@ public class SDLSScheduler {
             taskpool.remove(pushedtask);
             pushedtask.setPushed(true);
 
+            /*if (pushedtask.getLabel().equalsIgnoreCase("trimgalore")){
+                for (SDLentry entryy : listSDL){
+                    System.out.println("task: "+entryy.getTaskname().getLabel());
+                    System.out.println("proc: "+entryy.getProcname().getProcname());
+                    System.out.println("stexp: "+entryy.getStexp());
+                    System.out.println("sdlexp: "+entryy.getSdlexp());
+                }
+                System.out.println("task: "+ pushedtask.getLabel()+ " proc: "+taskprocpair.getValue1().getProcname());
+            }*/
             //push unconstrained childs into readypool
             pushChilds(taskpool, pushedtask, graph);
 
@@ -378,18 +365,32 @@ public class SDLSScheduler {
             //updateST Funktion schreiben beachten Formeln 1-4 im Paper!!! ?!?!
             //split into FT update and calcST in calcSDL from FT of the processor and the DRT of Task-proc-pair
             MyProcessor chosenproc = taskprocpair.getValue1();
-            Pair<Float,Float> stvalues = findST(taskprocpair,listSDL);
-            float completiontimeexp = stvalues.getValue0() + pushedtask.getExpected()/ chosenproc.getProcspeed() ;
-            float completiontimevar = stvalues.getValue1() + pushedtask.getVariance()/ chosenproc.getProcspeed() ;
+            Pair<Double,Double> stvalues = findST(taskprocpair,listSDL);
+            double completiontimeexp;
+            double completiontimevar = stvalues.getValue1() + pushedtask.getVariance()/ chosenproc.getProcspeed() ;
+            if (pushedtask.getLabel().equalsIgnoreCase("Start") || pushedtask.getLabel().equalsIgnoreCase("End")){
+                completiontimeexp = chosenproc.getFtexp() + 0; //add nothing if start or end
+            }else {
+                if (pushedtask.getExpected() == 0){
+                    completiontimeexp = stvalues.getValue0() + 60000/chosenproc.getProcspeed(); //set exp for task missing data (1min)
+                }else {
+                    completiontimeexp = stvalues.getValue0() + pushedtask.getExpected() / chosenproc.getProcspeed();
+                }
+            }
             //update the FT of the chosenproc and update the cttime for the pushedtask
             chosenproc.setFtexp(completiontimeexp);
             chosenproc.setFtvar(completiontimevar);
 
+            //System.out.println("ctvar:"+completiontimevar);
             pushedtask.setCTtimeexp(completiontimeexp);
             pushedtask.setCTtimevar(completiontimevar);
+            System.out.println("task:"+pushedtask.getLabel()+ " proc: "+chosenproc.getProcname());
+            //System.out.println("completionexp:"+completiontimeexp);
+            //System.out.println("task added-time: "+ pushedtask.getExpected()/chosenproc.getProcspeed());
             //updateST(cluster, graph, pushedtask, taskprocpair.getValue1(),taskpool);
         }
-        float makespan = findmakespan(cluster); //change to completiontime for last task thus => makespan = finishtime
+        double makespan = findmakespan(cluster); //change to completiontime for last task thus => makespan = finishtime
+        resetCluster(cluster); //return cluster to start state after finishing the calculation for one workflow
         return new Pair<>(makespan, schedule);
     }
 
@@ -406,17 +407,23 @@ public class SDLSScheduler {
         }
         return entry;
     }
-    public static Pair<Float,Float> calculateSDL( MyVertex vertex, MyProcessor processor, float w_p, float stexp, float stvar){
-        float varcompcapExp = calcVaryCompcap(vertex.getExpected(), w_p, processor);
-        float varcompcapVar = calcVaryCompcap(vertex.getVariance(), w_p, processor);
-
-        float sdlexp = vertex.getSb_levelexp() - stexp + varcompcapExp;//prüfen ob ST bei beiden gleich und ob/wie rechnungen anpassen
-        float sdlvar = vertex.getSb_levelvar() - stvar + varcompcapVar;
+    public static Pair<Double,Double> calculateSDL( MyVertex vertex, MyProcessor processor, double w_p, double stexp, double stvar){
+        double varcompcapExp = calcVaryCompcap(vertex.getExpected(), w_p, processor);
+        double varcompcapVar = calcVaryCompcap(vertex.getVariance(), w_p, processor);
+        //System.out.println("sbexp: "+vertex.getSb_levelexp());
+        //System.out.println("wp:" + w_p);
+        double sdlexp = vertex.getSb_levelexp() - stexp + varcompcapExp;//prüfen ob ST bei beiden gleich und ob/wie rechnungen anpassen
+        double sdlvar = vertex.getSb_levelvar() - stvar + varcompcapVar;
         return new Pair<>(sdlexp,sdlvar);
     }
 
-    public static float calcVaryCompcap(float v_i, float w_p, MyProcessor processor){
-        return (v_i/w_p) - (v_i/ processor.getProcspeed());
+    public static double calcVaryCompcap(double v_i, double w_p, MyProcessor processor){
+        if (v_i == 0d){
+            v_i = 1;
+        }
+        double result = (v_i/w_p) - (v_i/ processor.getProcspeed());
+        //System.out.println("result: "+result);
+        return result;
     }
 
     public static Pair<MyVertex, MyProcessor> stochasticGreatest(List<SDLentry> listSDL){
@@ -424,7 +431,7 @@ public class SDLSScheduler {
         Double greatestx = null;
         MyProcessor greatestproc = null;
         for (SDLentry currentry : listSDL){
-            float my;
+            double my;
             double sigma;
             if (currentry.getTaskname().getLabel().equals("Start") || currentry.getTaskname().getLabel().equals("End")){
                 my = Math.abs(currentry.getSdlexp());
@@ -480,44 +487,26 @@ public class SDLSScheduler {
 
     }
 
-    public static Pair<Float,Float> getdrt(MyVertex currtask,
+    public static Pair<Double,Double> getdrt(MyVertex currtask,
                                            DirectedAcyclicGraph<MyVertex,MyEdge> graph,
                                            List<Pair<MyVertex, MyProcessor>> schedule,
                                            MyProcessor currproc){
-        float drtexp;
-        float drtvar;
-        float ctexp = 0;
-        float ctvar = 0;
+        double drtexp;
+        double drtvar;
+        double ctexp = 0;
+        double ctvar = 0;
         MyVertex biggestct = null;
         //get Ancestors of current task
         Set<MyEdge> inedges = graph.incomingEdgesOf(currtask);
         //get biggest completiontime (comp all ancestors)
         for (MyEdge edgeancestor : inedges){
             MyVertex ancestor = graph.getEdgeSource(edgeancestor);
-            Pair<Float,Float> ctvalues = maxValues(ctexp,ancestor.getCTtimeexp(),ctvar, ancestor.getCTtimevar());
+            Pair<Double,Double> ctvalues = maxValues(ctexp,ancestor.getCTtimeexp(),ctvar, ancestor.getCTtimevar());
             ctexp = ctvalues.getValue0();
             ctvar = ctvalues.getValue1();
             if (ctvalues.getValue0() == ancestor.getCTtimeexp() && ctvalues.getValue1() == ancestor.getCTtimevar()){
                 biggestct = ancestor;
             }
-            /*float diffexp1 = Math.abs(ctexp - ctvalues.getValue0());
-            float diffexp2 = Math.abs(ancestor.getCTtimeexp() - ctvalues.getValue0());
-            float diffvar1 = Math.abs(ctvar - ctvalues.getValue1());
-            float diffvar2 = Math.abs(ancestor.getCTtimevar() - ctvalues.getValue1());
-            if (diffexp2 <= diffexp1){
-                if (diffvar2 <= diffvar1){
-                    ctexp = ancestor.getCTtimeexp();
-                    ctvar = ancestor.getCTtimevar();
-                    biggestct = ancestor;
-                }else {
-                    ctexp = ancestor.getCTtimeexp();
-                    ctvar = ancestor.getCTtimevar();
-                    biggestct = ancestor;
-                    System.out.println("maxValues-getDRT wonky Fail. Diffexp correct but diffvar fail!");
-                }
-            }else {
-                System.out.println("Diffexp failed!");
-            }*/
         }
         //check if on same proc: if yes: drt = 0 ,no: drt = cttime + edge
         MyProcessor ancestorproc = new MyProcessor("emptyname", 0);
@@ -536,9 +525,9 @@ public class SDLSScheduler {
         return new Pair<>(drtexp,drtvar);
     }
 
-    public static Pair<Float,Float> findST(Pair<MyVertex,MyProcessor> taskprocpair, List<SDLentry> sdllist){
-        float stexp = 0;
-        float stvar = 0;
+    public static Pair<Double,Double> findST(Pair<MyVertex,MyProcessor> taskprocpair, List<SDLentry> sdllist){
+        double stexp = 0;
+        double stvar = 0;
         for (SDLentry currentry : sdllist){
             if (currentry.getTaskname().equals(taskprocpair.getValue0()) && currentry.getProcname().equals(taskprocpair.getValue1())){
                 stexp = currentry.getStexp();
@@ -548,14 +537,20 @@ public class SDLSScheduler {
         return new Pair<>(stexp, stvar);
     }
 
-    private static float findmakespan(List<MyProcessor> cluster){
-        float makespan = 0;
+    private static double findmakespan(List<MyProcessor> cluster){
+        double makespan = 0;
         for (MyProcessor currproc : cluster){
             if (currproc.getFtexp() > makespan){
                 makespan = currproc.getFtexp();
             }
         }
         return makespan;
+    }
+
+    private static void resetCluster(List<MyProcessor> cluster){
+        for (MyProcessor currproc: cluster){
+            currproc.setFtexp(0);
+        }
     }
 
 }

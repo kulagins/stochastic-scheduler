@@ -7,13 +7,13 @@ public class DataRow {
 
     private final String task;
 
-    private final float realtime;
+    private final double realtime;
 
-    private final float taskinputsize;
+    private final double taskinputsize;
 
-    private final float wchar;
+    private final double wchar;
 
-    public DataRow(String machine, String workflow, String task, float realtime, float taskinputsize, float wchar){
+    public DataRow(String machine, String workflow, String task, double realtime, double taskinputsize, double wchar){
 
         this.machine = machine;
 
@@ -41,15 +41,15 @@ public class DataRow {
         return task;
     }
 
-    public float getRealtime(){
+    public double getRealtime(){
         return realtime;
     }
 
-    public float getTaskInputSize(){
+    public double getTaskInputSize(){
         return taskinputsize;
     }
 
-    public float getWchar(){
+    public double getWchar(){
         return wchar;
     }
 

@@ -4,18 +4,18 @@ package fonda.scheduler.model;
 
 public class MyVertex {
         public String label;
-        public float expected;
-        public float variance;
+        public double expected;
+        public double variance;
 
-        public float sb_levelexp;
+        public double sb_levelexp;
 
-        public float sb_levelvar;
+        public double sb_levelvar;
 
         public boolean pushed;
 
-        public float completiontimeexp;
+        public double completiontimeexp;
 
-        public float completiontimevar;
+        public double completiontimevar;
 
         public MyVertex(){
 
@@ -31,36 +31,36 @@ public class MyVertex {
             return label;
         }
 
-        public void setExpected(float expected) {
+        public void setExpected(double expected) {
             this.expected = expected;
         }
-        public float getExpected(){
+        public double getExpected(){
             return expected;
         }
 
-        public void setVariance(float variance) {
+        public void setVariance(double variance) {
             this.variance = variance;
         }
 
-        public float getVariance() {
+        public double getVariance() {
             return variance;
         }
 
-        public void setSb_levelexp(float sb_levelexp){this.sb_levelexp = sb_levelexp;}
+        public void setSb_levelexp(double sb_levelexp){this.sb_levelexp = sb_levelexp;}
 
-        public float getSb_levelexp(){return sb_levelexp;}
+        public double getSb_levelexp(){return sb_levelexp;}
 
-        public void setSb_levelvar(float sb_levelvar){this.sb_levelvar = sb_levelvar;}
+        public void setSb_levelvar(double sb_levelvar){this.sb_levelvar = sb_levelvar;}
 
-        public float getSb_levelvar(){return sb_levelvar;}
+        public double getSb_levelvar(){return sb_levelvar;}
 
         public void setPushed(boolean pushed){this.pushed = pushed;}
 
         public boolean getPushed(){return this.pushed;}
 
-        public void setCTtimeexp(float ctexp){this.completiontimeexp = ctexp;}
-        public float getCTtimeexp(){return this.completiontimeexp;}
+        public void setCTtimeexp(double ctexp){this.completiontimeexp = ctexp;}
+        public double getCTtimeexp(){return this.completiontimeexp;}
 
-        public void setCTtimevar(float ctvar){this.completiontimevar = ctvar;}
-        public float getCTtimevar(){return this.completiontimevar;}
+        public void setCTtimevar(double ctvar){this.completiontimevar = ctvar;}
+        public double getCTtimevar(){return this.completiontimevar;}
 }
