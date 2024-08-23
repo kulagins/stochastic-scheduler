@@ -274,23 +274,6 @@ public class CurrentPodNodeStatus {
                                     }
 
                                     schedulePod(nodeList, pod, results.getValue1()); //schedules pod which cause calculation
-                                    /*for (int n = 0; n < schedulelist.size(); n++) {
-                                        Pair<String, List<Pair<MyVertex, MyProcessor>>> schedulepair = schedulelist.get(n);
-                                        if (workflowname.equals(schedulepair.getValue0())) {
-                                            List<Pair<MyVertex, MyProcessor>> schedule = schedulepair.getValue1();
-                                            for (int o = 0; o < schedule.size(); o++) {
-                                                if (Objects.equals(pod.getMetadata().getName(), schedule.get(o).getValue0().getLabel())) {
-                                                    String nodename = schedule.get(o).getValue1().getProcname();
-                                                    Node currnode = findNode(nodeList, nodename);
-                                                    Pair<Pod, Node> currpair = K8Helper.bindPodToNode(pod, currnode, -1.0);
-                                                    System.out.println("Scheduled: " + currpair.getValue0().getMetadata().getLabels() + " to " + currnode.getMetadata().getName());
-                                                    //pod.getSpec().setNodeName(nodename);
-                                                    break;
-                                                }
-                                            }
-                                        }
-                                    }*/
-
                                     break;
                                 }
                             }
