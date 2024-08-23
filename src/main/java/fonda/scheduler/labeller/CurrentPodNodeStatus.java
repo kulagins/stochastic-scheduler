@@ -201,27 +201,7 @@ public class CurrentPodNodeStatus {
                                     //Assign nodeName for pod (copy from below) -> extra function if it works
                                         Pair<String, List<Pair<MyVertex, MyProcessor>>> schedulepair = schedulelist.get(j);
                                         List<Pair<MyVertex, MyProcessor>> schedule = schedulepair.getValue1();
-                                        for (int o = 0; o < schedule.size(); o++) {
-                                                if (pod.getMetadata().getName().equalsIgnoreCase(schedule.get(o).getValue0().getLabel())) {
-                                                    String nodename = schedule.get(o).getValue1().getProcname();
-                                                    Node currnode = findNode(nodeList, nodename);
-                                                    Pair<Pod, Node> currpair = K8Helper.bindPodToNode(pod, currnode, -1.0);
-                                                    System.out.println("Scheduled: " + currpair.getValue0().getMetadata().getLabels() + " to " + currnode.getMetadata().getName());
-                                                    try {
-                                                        FileWriter writer = new FileWriter("testresults.txt",true);
-                                                        BufferedWriter bw = new BufferedWriter(writer);
-                                                        bw.write("Scheduled: " + currpair.getValue0().getMetadata().getLabels() + " to " + currnode.getMetadata().getName());
-                                                        bw.newLine();
-                                                        bw.close();
-                                                    } catch (IOException e) {
-                                                        System.out.println("An error occured during creation of Writer.");
-                                                        e.printStackTrace();
-                                                    }
-                                                    //check ob -1.0 korrekt ?!
-                                                    //pod.getSpec().setNodeName(nodename);
-                                                    break;
-                                                }
-                                        }
+                                        schedulePod(nodeList, pod, schedule);
                                         System.out.println("Schedule already existed.");
                                         break;
                                 }
@@ -293,7 +273,8 @@ public class CurrentPodNodeStatus {
                                         e.printStackTrace();
                                     }
 
-                                    for (int n = 0; n < schedulelist.size(); n++) {
+                                    schedulePod(nodeList, pod, results.getValue1()); //schedules pod which cause calculation
+                                    /*for (int n = 0; n < schedulelist.size(); n++) {
                                         Pair<String, List<Pair<MyVertex, MyProcessor>>> schedulepair = schedulelist.get(n);
                                         if (workflowname.equals(schedulepair.getValue0())) {
                                             List<Pair<MyVertex, MyProcessor>> schedule = schedulepair.getValue1();
@@ -308,7 +289,7 @@ public class CurrentPodNodeStatus {
                                                 }
                                             }
                                         }
-                                    }
+                                    }*/
 
                                     break;
                                 }
@@ -372,6 +353,29 @@ public class CurrentPodNodeStatus {
         return null;
     }
 
+    private void schedulePod(List<Node> nodeList, Pod pod, List<Pair<MyVertex,MyProcessor>>schedule){
+        for (int o = 0; o < schedule.size(); o++) {
+            if (pod.getMetadata().getName().equalsIgnoreCase(schedule.get(o).getValue0().getLabel())) {
+                String nodename = schedule.get(o).getValue1().getProcname();
+                Node currnode = findNode(nodeList, nodename);
+                Pair<Pod, Node> currpair = K8Helper.bindPodToNode(pod, currnode, -1.0);
+                System.out.println("Scheduled: " + currpair.getValue0().getMetadata().getLabels() + " to " + currnode.getMetadata().getName());
+                try {
+                    FileWriter writer = new FileWriter("testresults.txt",true);
+                    BufferedWriter bw = new BufferedWriter(writer);
+                    bw.write("Scheduled: " + currpair.getValue0().getMetadata().getLabels() + " to " + currnode.getMetadata().getName());
+                    bw.newLine();
+                    bw.close();
+                } catch (IOException e) {
+                    System.out.println("An error occured during creation of Writer.");
+                    e.printStackTrace();
+                }
+                //check ob -1.0 korrekt ?!
+                //pod.getSpec().setNodeName(nodename);
+                break;
+            }
+        }
+    }
     /**
      *
      */
