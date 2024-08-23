@@ -200,8 +200,8 @@ public class CurrentPodNodeStatus {
                                 if (!schedulelist.isEmpty() && schedulelist.get(j).getValue0().equalsIgnoreCase(workflowname)) {
                                     //Assign nodeName for pod (copy from below) -> extra function if it works
                                         Pair<String, List<Pair<MyVertex, MyProcessor>>> schedulepair = schedulelist.get(j);
-                                            List<Pair<MyVertex, MyProcessor>> schedule = schedulepair.getValue1();
-                                            for (int o = 0; o < schedule.size(); o++) {
+                                        List<Pair<MyVertex, MyProcessor>> schedule = schedulepair.getValue1();
+                                        for (int o = 0; o < schedule.size(); o++) {
                                                 if (pod.getMetadata().getName().equalsIgnoreCase(schedule.get(o).getValue0().getLabel())) {
                                                     String nodename = schedule.get(o).getValue1().getProcname();
                                                     Node currnode = findNode(nodeList, nodename);
@@ -221,9 +221,9 @@ public class CurrentPodNodeStatus {
                                                     //pod.getSpec().setNodeName(nodename);
                                                     break;
                                                 }
-                                            }
-                                    System.out.println("Schedule already existed.");
-                                    break;
+                                        }
+                                        System.out.println("Schedule already existed.");
+                                        break;
                                 }
                                 if (schedulelist.isEmpty() || j == (schedulelist.size() - 1)) {
                                     //import dot-file based on workflow from names
