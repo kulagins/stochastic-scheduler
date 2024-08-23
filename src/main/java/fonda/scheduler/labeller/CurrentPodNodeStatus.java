@@ -197,14 +197,12 @@ public class CurrentPodNodeStatus {
                             //Check if schedule available
                             for (int j = 0; j <= schedulelist.size(); j++) {
                                 //Pair<String, List<Pair<MyVertex,MyProcessor>>> currpair = schedulelist.get(j);
-                                if (!schedulelist.isEmpty() && schedulelist.get(j).getValue0().equals(workflowname)) {
+                                if (!schedulelist.isEmpty() && schedulelist.get(j).getValue0().equalsIgnoreCase(workflowname)) {
                                     //Assign nodeName for pod (copy from below) -> extra function if it works
-                                    for (int n = 0; n < schedulelist.size(); n++) {
-                                        Pair<String, List<Pair<MyVertex, MyProcessor>>> schedulepair = schedulelist.get(n);
-                                        if (workflowname.equals(schedulepair.getValue0())) {
+                                        Pair<String, List<Pair<MyVertex, MyProcessor>>> schedulepair = schedulelist.get(j);
                                             List<Pair<MyVertex, MyProcessor>> schedule = schedulepair.getValue1();
                                             for (int o = 0; o < schedule.size(); o++) {
-                                                if (Objects.equals(pod.getMetadata().getName(), schedule.get(o).getValue0().getLabel())) {
+                                                if (pod.getMetadata().getName().equalsIgnoreCase(schedule.get(o).getValue0().getLabel())) {
                                                     String nodename = schedule.get(o).getValue1().getProcname();
                                                     Node currnode = findNode(nodeList, nodename);
                                                     Pair<Pod, Node> currpair = K8Helper.bindPodToNode(pod, currnode, -1.0);
@@ -224,8 +222,6 @@ public class CurrentPodNodeStatus {
                                                     break;
                                                 }
                                             }
-                                        }
-                                    }
                                     System.out.println("Schedule already existed.");
                                     break;
                                 }
