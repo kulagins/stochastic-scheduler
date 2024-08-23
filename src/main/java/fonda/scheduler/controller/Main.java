@@ -69,10 +69,10 @@ public class Main {
                     System.out.println("Amount of machine is not a int-value.(Impossible). Error-value:" + cpuvalues[1]);
                     continue;
                 }
-                float cpuspeed = 0;
+                double cpuspeed = 0;
                 try{
                     if (!cpuvalues[2].equals("CPU")){
-                        cpuspeed = Float.parseFloat(cpuvalues[2]);
+                        cpuspeed = Double.parseDouble(cpuvalues[2]);
                     }
                 }catch (Exception e){
                     System.out.println("Processorspeed is not a float value. Error 205");
