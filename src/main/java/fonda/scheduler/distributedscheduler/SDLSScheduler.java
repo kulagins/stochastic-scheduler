@@ -367,14 +367,17 @@ public class SDLSScheduler {
             MyProcessor chosenproc = taskprocpair.getValue1();
             Pair<Double,Double> stvalues = findST(taskprocpair,listSDL);
             double completiontimeexp;
-            double completiontimevar = stvalues.getValue1() + pushedtask.getVariance()/ chosenproc.getProcspeed() ;
+            double completiontimevar;
             if (pushedtask.getLabel().equalsIgnoreCase("Start") || pushedtask.getLabel().equalsIgnoreCase("End")){
-                completiontimeexp = chosenproc.getFtexp() + 0; //add nothing if start or end
+                completiontimeexp = chosenproc.getFtexp() + 0;
+                completiontimevar = chosenproc.getFtvar() + 0;//add nothing if start or end
             }else {
                 if (pushedtask.getExpected() == 0){
                     completiontimeexp = stvalues.getValue0() + 60000/chosenproc.getProcspeed(); //set exp for task missing data (1min)
+                    completiontimevar = stvalues.getValue1() + 0;
                 }else {
                     completiontimeexp = stvalues.getValue0() + pushedtask.getExpected() / chosenproc.getProcspeed();
+                    completiontimevar = stvalues.getValue1() + pushedtask.getVariance()/ chosenproc.getProcspeed() ;
                 }
             }
             //update the FT of the chosenproc and update the cttime for the pushedtask

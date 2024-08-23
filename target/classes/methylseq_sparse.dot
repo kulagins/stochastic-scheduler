@@ -10,6 +10,7 @@ strict digraph "" {
 	3 -> 4;
 	3 -> 11;
 	1	[label=get_software_versions];
+	0 -> 1;
 	1 -> 11;
 	5	[label=bismark_deduplicate];
 	4 -> 5;
